@@ -1,0 +1,97 @@
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:fillViewport="true"
+    tools:context="com.itec4820.joshua.encrypt_o_file.Login">
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/login_form_gradient">
+
+        <!--Header Starts-->
+        <LinearLayout
+            android:id="@+id/header"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/login_header_gradient"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp">
+
+            <!--Logo Starts-->
+            <ImageView
+                android:src="@drawable/ic_launcher"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"/>
+            <!--Logo Ends-->
+        </LinearLayout>
+        <!--Header Ends-->
+
+        <!--Footer Starts-->
+        <LinearLayout
+            android:id="@+id/footer"
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="90dp"
+            android:background="@drawable/login_header_gradient"
+            android:layout_alignParentBottom="true">
+        </LinearLayout>
+        <!--Footer Ends-->
+
+        <!--Login Form-->
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_below="@id/header">
+
+            <!--Username-->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#ffffff"
+                android:text="Username"/>
+
+            <EditText
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="#F0F0F0"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="20dp"
+                android:textSize="36sp"
+                android:singleLine="true"/>
+
+            <!--Password-->
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#ffffff"
+                android:text="Password"/>
+
+            <EditText
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="#F0F0F0"
+                android:layout_marginTop="5dip"
+                android:textSize="36sp"
+                android:singleLine="true"
+                android:password="true"/>
+
+            <!--Login Button-->
+            <Button
+                android:id="@+id/loginButton"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dip"
+                android:text="Login"
+                android:onClick="viewDirectory" />
+
+        </LinearLayout>
+        <!--Login Form Ends-->
+    </RelativeLayout>
+</ScrollView>
