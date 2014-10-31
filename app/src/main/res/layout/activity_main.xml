@@ -9,16 +9,18 @@
     tools:context=".MainActivity">
 
     <!--Link to Registration Screen-->
-    <TextView
+    <Button
         android:id="@+id/registrationLink"
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dip"
         android:layout_marginBottom="40dip"
+        android:padding="10dp"
         android:text="Register here"
-        android:gravity="center"
+        android:layout_centerHorizontal="true"
         android:textSize="20dip"
-        android:textColor="#0b84aa" />
+        android:textColor="#0b84aa"
+        android:background="@null"/>
         <!--android:onClick="login"-->
 
 

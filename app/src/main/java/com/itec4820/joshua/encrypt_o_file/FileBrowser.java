@@ -70,7 +70,7 @@ public class FileBrowser extends ListActivity {
         directory.addAll(filesList);
         if(!aFile.getName().equalsIgnoreCase("sdcard"))
             directory.add(0,new FileListItem("..","Parent Directory","",aFile.getParent(),"directory_up"));
-        adapter = new FileArrayAdapter(FileBrowser.this, R.layout.activity_file_browser,directory);
+        adapter = new FileArrayAdapter(getApplicationContext(), R.layout.activity_file_browser,directory);
         this.setListAdapter(adapter);
     }
     @Override
@@ -89,7 +89,7 @@ public class FileBrowser extends ListActivity {
     }
     private void onFileClick(FileListItem listItem)
     {
-        //Toast.makeText(this, "Folder Clicked: "+ currentDir, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getApplicationContext(), "Folder Clicked: "+ currentDir, Toast.LENGTH_SHORT).show();
         Intent intent = new Intent();
         intent.putExtra("GetPath",currentDirectory.toString());
         intent.putExtra("GetFileName",listItem.getName());

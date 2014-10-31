@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.TextView;
+import android.widget.Button;
 
 /**
  * Created by Joshua on 10/9/2014.
@@ -22,11 +22,10 @@ public class MainActivity extends ActionBarActivity {
             Intent intentLogin = new Intent(getApplicationContext(), Login.class);
             startActivity(intentLogin);
             finish();
-
         }
         else {
             setContentView(R.layout.activity_main);
-            TextView registerLink = (TextView)findViewById(R.id.registrationLink);
+            Button registerLink = (Button)findViewById(R.id.registrationLink);
 
             //listening for register link click
             registerLink.setOnClickListener(new View.OnClickListener() {
