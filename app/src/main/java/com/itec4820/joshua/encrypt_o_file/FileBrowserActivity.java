@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -27,7 +28,7 @@ public class FileBrowserActivity extends ListActivity {
     }
     private void fill(File aFile)
     {
-        File[]directoryArray = aFile.listFiles();
+        File[] directoryArray = aFile.listFiles();
         this.setTitle(currentDirectory.getPath());
         List<FileListItem>directory = new ArrayList<FileListItem>();
         List<FileListItem> filesList = new ArrayList<FileListItem>();
@@ -54,11 +55,32 @@ public class FileBrowserActivity extends ListActivity {
                         numOfItems = totalFiles + " items";
                     }
 
-                    directory.add(new FileListItem(file.getName(),numOfItems,modifiedDate,file.getAbsolutePath(),"directory_icon"));
+                    directory.add(new FileListItem(file.getName(), numOfItems,modifiedDate,file.getAbsolutePath(),"directory_icon"));
                 }
                 else
                 {
-                    filesList.add(new FileListItem(file.getName(),file.length() + " Byte", modifiedDate, file.getAbsolutePath(),"file_icon"));
+                    String iconName = "file_icon";
+                    if (file.getName().endsWith(".doc") || file.getName().endsWith(".docx")){
+                        iconName = "doc_icon";
+                    }
+                    else if (file.getName().endsWith(".xls") || file.getName().endsWith(".xlsx")) {
+                        iconName = "xls_icon";
+                    }
+                    else if (file.getName().endsWith(".ppt") || file.getName().endsWith(".pptx")) {
+                        iconName = "ppt_icon";
+                    }
+                    else if (file.getName().endsWith(".pdf")) {
+                        iconName = "pdf_icon";
+                    }
+                    else if (file.getName().endsWith(".txt")) {
+                        iconName = "txt_icon";
+                    }
+                    else if (file.getName().endsWith(".png") || file.getName().endsWith(".jpg")  || file.getName().endsWith(".jpeg")
+                            || file.getName().endsWith(".gif")) {
+                        iconName = "img_icon";
+                    }
+
+                    filesList.add(new FileListItem(file.getName(), file.length() + " Byte", modifiedDate, file.getAbsolutePath(), iconName));
                 }
             }
         }catch(Exception e)
@@ -68,8 +90,11 @@ public class FileBrowserActivity extends ListActivity {
         Collections.sort(directory);
         Collections.sort(filesList);
         directory.addAll(filesList);
-        if(!aFile.getName().equalsIgnoreCase("sdcard"))
-            directory.add(0,new FileListItem("..","Parent Directory","",aFile.getParent(),"directory_up"));
+
+        if(!aFile.getName().equalsIgnoreCase("sdcard")) {
+            directory.add(0, new FileListItem("..", "Parent Directory", "", aFile.getParent(), "directory_up"));
+        }
+
         adapter = new FileArrayAdapter(getApplicationContext(), R.layout.activity_file_browser,directory);
         this.setListAdapter(adapter);
     }
@@ -78,7 +103,8 @@ public class FileBrowserActivity extends ListActivity {
         // TODO Auto-generated method stub
         super.onListItemClick(listView, view, position, id);
         FileListItem fListItem = adapter.getItem(position);
-        if(fListItem.getImage().equalsIgnoreCase("directory_icon")||fListItem.getImage().equalsIgnoreCase("directory_up")){
+
+        if(fListItem.getImage().equalsIgnoreCase("directory_icon") || fListItem.getImage().equalsIgnoreCase("directory_up")){
             currentDirectory = new File(fListItem.getPath());
             fill(currentDirectory);
         }
@@ -89,11 +115,11 @@ public class FileBrowserActivity extends ListActivity {
     }
     private void onFileClick(FileListItem listItem)
     {
-        //Toast.makeText(getApplicationContext(), "Folder Clicked: "+ currentDir, Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent();
+        Toast.makeText(getApplicationContext(), "Clicked: " + listItem.getName(), Toast.LENGTH_SHORT).show();
+        /*Intent intent = new Intent();
         intent.putExtra("GetPath",currentDirectory.toString());
         intent.putExtra("GetFileName",listItem.getName());
         setResult(RESULT_OK, intent);
-        finish();
+        finish();*/
     }
 }

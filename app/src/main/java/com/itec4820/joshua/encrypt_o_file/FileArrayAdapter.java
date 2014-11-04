@@ -26,10 +26,12 @@ public class FileArrayAdapter extends ArrayAdapter<FileListItem> {
         id = textViewResourceId;
         items = newItems;
     }
+
     public FileListItem getItem(int i)
     {
         return items.get(i);
     }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View v = convertView;
