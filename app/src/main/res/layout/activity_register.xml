@@ -4,7 +4,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:fillViewport="true"
-    tools:context="com.itec4820.joshua.encrypt_o_file.Register">
+    tools:context="com.itec4820.joshua.encrypt_o_file.RegisterActivity">
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" android:background="#fff">
@@ -26,24 +26,12 @@
         </LinearLayout>
         <!--  Header Ends -->
 
-        <!-- Footer Start -->
-        <LinearLayout
-            android:id="@+id/footer"
-            android:layout_width="fill_parent"
-            android:layout_height="90dp"
-            android:orientation="vertical"
-            android:background="@drawable/login_header_gradient"
-            android:layout_alignParentBottom="true">
-        </LinearLayout>
-        <!-- Footer Ends -->
-
         <!-- Registration Form -->
         <LinearLayout
             xmlns:android="http://schemas.android.com/apk/res/android"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
             android:layout_below="@id/header">
 
             <!--Page Title-->
@@ -51,6 +39,8 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
                 android:text="REGISTER"
                 android:textSize="25dp"
                 android:textStyle="bold"/>
@@ -59,6 +49,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:textColor="#372c24"
                 android:text="Email"/>
 
@@ -67,6 +59,8 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
                 android:singleLine="true"
                 android:layout_marginBottom="20dp"/>
 
@@ -74,6 +68,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:textColor="#372c24"
                 android:text="Password"/>
 
@@ -82,7 +78,9 @@
                 android:layout_height="wrap_content"
                 android:password="true"
                 android:singleLine="true"
-                android:layout_marginTop="5dp"/>
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp" />
 
             <!--Error Message-->
             <TextView
@@ -99,6 +97,8 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:text="Register"
                 android:onClick="register" />
 
@@ -117,6 +117,23 @@
                 android:textSize="20dp"
                 android:textColor="#025f7c"
                 android:onClick="goToLogin"/>
+
+            <!-- Footer Start -->
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+                <LinearLayout
+                    android:id="@+id/footer"
+                    android:layout_width="fill_parent"
+                    android:layout_height="90dp"
+                    android:orientation="vertical"
+                    android:background="@drawable/login_header_gradient"
+                    android:layout_alignParentBottom="true">
+                </LinearLayout>
+
+            </RelativeLayout>
+            <!-- Footer Ends -->
 
         </LinearLayout>
         <!-- Registration Form Ends -->

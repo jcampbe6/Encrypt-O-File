@@ -5,16 +5,16 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class Register extends Activity {
+public class RegisterActivity extends Activity {
 
     Button registerButton;
     Button loginLink;
@@ -23,12 +23,12 @@ public class Register extends Activity {
     TextView registrationErrorMessage;
 
     // JSON Response node names
-    private static String KEY_SUCCESS = "success";
-    private static String KEY_ERROR = "error";
-    private static String KEY_ERROR_MSG = "error_msg";
-    private static String KEY_UID = "uid";
-    private static String KEY_EMAIL = "email";
-    private static String KEY_CREATED_AT = "created_at";
+    private final static String KEY_SUCCESS = "success";
+    private final static String KEY_ERROR = "error";
+    private final static String KEY_ERROR_MSG = "error_msg";
+    private final static String KEY_UID = "uid";
+    private final static String KEY_EMAIL = "email";
+    private final static String KEY_CREATED_AT = "created_at";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -56,8 +56,6 @@ public class Register extends Activity {
 
         //check for registration response
         try {
-            Toast.makeText(getApplicationContext(), jsonObj.getString(KEY_SUCCESS), Toast.LENGTH_SHORT).show();
-
             if (jsonObj.getString(KEY_SUCCESS) != null) {
                 registrationErrorMessage.setText("");
                 String jsonResponse = jsonObj.getString(KEY_SUCCESS);
@@ -72,8 +70,14 @@ public class Register extends Activity {
                     loginRegisterHandler.logoutUser(getApplicationContext());
                     dbHandler.addUser(jsonUser.getString(KEY_EMAIL), jsonObj.getString(KEY_UID), jsonUser.getString(KEY_CREATED_AT));
 
+                    //update registration status in app preferences to true
+                    SharedPreferences settings = getSharedPreferences("app_preferences", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = settings.edit();
+                    editor.putBoolean("registration_status", true);
+                    editor.apply();
+
                     //launch login screen
-                    Intent intentLogin = new Intent(getApplicationContext(), Login.class);
+                    Intent intentLogin = new Intent(getApplicationContext(), LoginActivity.class);
 
                     //close all views before launching login screen
                     intentLogin.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -95,7 +99,7 @@ public class Register extends Activity {
 
     public void goToLogin(View view) {
         //launch login screen
-        Intent intentLogin = new Intent(getApplicationContext(), Login.class);
+        Intent intentLogin = new Intent(getApplicationContext(), LoginActivity.class);
 
         //close all views before launching login screen
         intentLogin.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

@@ -5,7 +5,9 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,7 +17,7 @@ import android.widget.Toast;
 /**
  * Created by Joshua on 10/16/2014.
  */
-public class Login extends Activity {
+public class LoginActivity extends Activity {
     Button loginButton;
     Button forgotPasswordButton;
     EditText loginEmail;
@@ -23,23 +25,33 @@ public class Login extends Activity {
     TextView loginErrorMessage;
 
     // JSON Response node names
-    private static String KEY_SUCCESS = "success";
-    private static String KEY_ERROR = "error";
-    private static String KEY_ERROR_MSG = "error_msg";
-    private static String KEY_UID = "uid";
-    private static String KEY_EMAIL = "email";
-    private static String KEY_CREATED_AT = "created_at";
+    private final static String KEY_SUCCESS = "success";
+    private final static String KEY_ERROR = "error";
+    private final static String KEY_ERROR_MSG = "error_msg";
+    private final static String KEY_UID = "uid";
+    private final static String KEY_EMAIL = "email";
+    private final static String KEY_CREATED_AT = "created_at";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        //this thread policy allows network access on main thread -- only used for testing
+        //network access should be on separate thread
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
         loginButton = (Button) findViewById(R.id.loginButton);
         forgotPasswordButton = (Button) findViewById(R.id.forgotPasswordButton);
         loginEmail = (EditText) findViewById(R.id.loginEmail);
         loginPassword = (EditText) findViewById(R.id.loginPassword);
         loginErrorMessage = (TextView) findViewById(R.id.loginErrorMessage);
+
+        /*SharedPreferences settings = getSharedPreferences("app_preferences", MODE_PRIVATE);
+        boolean isAppRegistered = settings.getBoolean("registration_status", false);
+
+        Toast.makeText(this, "Registered: " + isAppRegistered, Toast.LENGTH_LONG).show();*/
     }
 
     //verifies credentials and logs in if successful
@@ -70,7 +82,7 @@ public class Login extends Activity {
                     dbHandler.addUser(jsonUser.getString(KEY_EMAIL), jsonObj.getString(KEY_UID), jsonUser.getString(KEY_CREATED_AT));
 
                     //view directory
-                    Intent intentBrowse = new Intent(getApplicationContext(), FileBrowser.class);
+                    Intent intentBrowse = new Intent(getApplicationContext(), FileBrowserActivity.class);
 
                     //close all views before viewing directory
                     intentBrowse.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -90,7 +102,7 @@ public class Login extends Activity {
         }
     }
 
-    public void resetPassword() {
-        Toast.makeText(getApplicationContext(), "No Functionality Yet", Toast.LENGTH_SHORT);
+    public void resetPassword(View view) {
+        Toast.makeText(getApplicationContext(), "No Functionality Yet", Toast.LENGTH_SHORT).show();
     }
 }

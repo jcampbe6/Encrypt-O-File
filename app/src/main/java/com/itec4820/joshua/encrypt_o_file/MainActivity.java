@@ -1,6 +1,7 @@
 package com.itec4820.joshua.encrypt_o_file;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -11,15 +12,19 @@ import android.widget.Button;
  */
 public class MainActivity extends ActionBarActivity {
 
-    private boolean registered = false;
+    private boolean isAppRegistered;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (registered) {
+        // Restore preferences
+        SharedPreferences settings = getSharedPreferences("app_preferences", MODE_PRIVATE);
+        isAppRegistered = settings.getBoolean("registration_status", false);
+
+        if (isAppRegistered) {
             //switching to login screen
-            Intent intentLogin = new Intent(getApplicationContext(), Login.class);
+            Intent intentLogin = new Intent(getApplicationContext(), LoginActivity.class);
             startActivity(intentLogin);
             finish();
         }
@@ -31,7 +36,7 @@ public class MainActivity extends ActionBarActivity {
             registerLink.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     // Switching to Register screen
-                    Intent intentRegister = new Intent(getApplicationContext(), Register.class);
+                    Intent intentRegister = new Intent(getApplicationContext(), RegisterActivity.class);
                     startActivity(intentRegister);
                     finish();
                 }

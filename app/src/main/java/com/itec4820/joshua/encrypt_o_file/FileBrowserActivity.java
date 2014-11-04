@@ -14,7 +14,7 @@ import java.util.Date;
 import java.util.List;
 
 
-public class FileBrowser extends ListActivity {
+public class FileBrowserActivity extends ListActivity {
 
     private File currentDirectory;
     private FileArrayAdapter adapter;

@@ -7,21 +7,15 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 /**
  * Created by Joshua on 10/25/2014.
  */
 public class DatabaseHandler extends SQLiteOpenHelper {
     // All Static variables
-    // Database Version
     private static final int DATABASE_VERSION = 1;
-
-    // Database Name
     private static final String DATABASE_NAME = "encryptofile";
-
-    // Login table name
-    private static final String TABLE_LOGIN = "login";
+    private static final String TABLE_NAME = "login";
 
     // Login Table Columns names
     private static final String KEY_ID = "id";
@@ -36,7 +30,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     // Creating Tables
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String CREATE_LOGIN_TABLE = "CREATE TABLE " + TABLE_LOGIN + "("
+        String CREATE_LOGIN_TABLE = "CREATE TABLE " + TABLE_NAME + "("
                 + KEY_ID + " INTEGER PRIMARY KEY,"
                 + KEY_EMAIL + " TEXT UNIQUE,"
                 + KEY_UID + " TEXT,"
@@ -48,7 +42,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Drop older table if existed
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_LOGIN);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
 
         // Create tables again
         onCreate(db);
@@ -66,7 +60,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_CREATED_AT, created_at); // Created At
 
         // Inserting Row
-        db.insert(TABLE_LOGIN, null, values);
+        db.insert(TABLE_NAME, null, values);
         db.close(); // Closing database connection
     }
 
@@ -75,7 +69,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * */
     public HashMap<String, String> getUserDetails(){
         HashMap<String,String> user = new HashMap<String,String>();
-        String selectQuery = "SELECT  * FROM " + TABLE_LOGIN;
+        String selectQuery = "SELECT  * FROM " + TABLE_NAME;
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -97,7 +91,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * return true if rows are there in table
      * */
     public int getRowCount() {
-        String countQuery = "SELECT  * FROM " + TABLE_LOGIN;
+        String countQuery = "SELECT  * FROM " + TABLE_NAME;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(countQuery, null);
         int rowCount = cursor.getCount();
@@ -116,7 +110,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         // Delete All Rows
-        db.delete(TABLE_LOGIN, null, null);
+        db.delete(TABLE_NAME, null, null);
         db.close();
     }
 }

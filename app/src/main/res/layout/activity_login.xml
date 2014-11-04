@@ -4,7 +4,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:fillViewport="true"
-    tools:context="com.itec4820.joshua.encrypt_o_file.Login">
+    tools:context="com.itec4820.joshua.encrypt_o_file.LoginActivity">
 
     <RelativeLayout
         android:layout_width="fill_parent"
@@ -30,24 +30,12 @@
         </LinearLayout>
         <!--Header Ends-->
 
-        <!--Footer Starts-->
-        <LinearLayout
-            android:id="@+id/footer"
-            android:orientation="vertical"
-            android:layout_width="fill_parent"
-            android:layout_height="90dp"
-            android:background="@drawable/login_header_gradient"
-            android:layout_alignParentBottom="true">
-        </LinearLayout>
-        <!--Footer Ends-->
-
         <!--Login Form-->
         <LinearLayout
             xmlns:android="http://schemas.android.com/apk/res/android"
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
+            android:layout_height="fill_parent"
             android:layout_below="@id/header">
 
             <!--Page Title-->
@@ -55,6 +43,8 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:text="LOGIN"
                 android:textColor="#C7C7C7"
                 android:textSize="25dp"
@@ -64,6 +54,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:textColor="#ffffff"
                 android:text="Email"/>
 
@@ -72,15 +64,19 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:background="#F0F0F0"
+                android:padding="5dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="20dp"
-                android:textSize="36sp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:singleLine="true"/>
 
             <!--Password-->
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
                 android:textColor="#ffffff"
                 android:text="Password"/>
 
@@ -89,8 +85,10 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:background="#F0F0F0"
+                android:padding="5dp"
                 android:layout_marginTop="5dp"
-                android:textSize="36sp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:singleLine="true"
                 android:password="true"/>
 
@@ -111,6 +109,8 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:text="Login"
                 android:onClick="login" />
 
@@ -127,7 +127,26 @@
                 android:layout_gravity="center"
                 android:onClick="resetPassword"/>
 
+            <!--Footer Starts-->
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+                <LinearLayout
+                    android:id="@+id/footer"
+                    android:orientation="vertical"
+                    android:layout_width="fill_parent"
+                    android:layout_height="90dp"
+                    android:background="@drawable/login_header_gradient"
+                    android:layout_alignParentBottom="true">
+                </LinearLayout>
+
+            </RelativeLayout>
+            <!--Footer Ends-->
+
         </LinearLayout>
         <!--Login Form Ends-->
+
+
     </RelativeLayout>
 </ScrollView>

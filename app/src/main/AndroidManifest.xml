@@ -21,15 +21,15 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".FileBrowser"
+            android:name=".FileBrowserActivity"
             android:label="File Browser" >
         </activity>
         <activity
-            android:name=".Login"
+            android:name=".LoginActivity"
             android:label="Login" >
         </activity>
         <activity
-            android:name=".Register"
+            android:name=".RegisterActivity"
             android:label="@string/title_activity_register" >
         </activity>
     </application>
