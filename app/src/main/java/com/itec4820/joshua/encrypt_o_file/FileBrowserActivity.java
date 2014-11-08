@@ -2,9 +2,12 @@ package com.itec4820.joshua.encrypt_o_file;
 
 import android.app.ListActivity;
 import android.content.Intent;
-import android.os.Bundle;
+import android.net.Uri;
+import android.os.*;
+import android.os.Process;
 import android.text.format.Formatter;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -134,13 +137,22 @@ public class FileBrowserActivity extends ListActivity {
         fill(currentDirectory);
     }
 
-    private void onFileClick(FileListItem listItem) {
-        Toast.makeText(getApplicationContext(), "Clicked: " + listItem.getFileName(), Toast.LENGTH_SHORT).show();
-        /*Intent intent = new Intent();
-        intent.putExtra("GetPath",currentDirectory.toString());
-        intent.putExtra("GetFileName",listItem.getName());
-        setResult(RESULT_OK, intent);
-        finish();*/
+    private void onFileClick(final FileListItem listItem) {
+        String ext = listItem.getFileName().substring(listItem.getFileName().indexOf(".")+1);
+
+        if (!listItem.getFileName().startsWith(".") && !ext.contains(".apk")) {
+            Intent intent = new Intent();
+            intent.setAction(android.content.Intent.ACTION_VIEW);
+
+            MimeTypeMap mime = MimeTypeMap.getSingleton();
+            String type = mime.getMimeTypeFromExtension(ext);
+
+            intent.setDataAndType(Uri.fromFile(listItem.getFile()), type);
+            startActivity(intent);
+        }
+        else {
+            Toast.makeText(getApplicationContext(), "Can't open this type of file.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
