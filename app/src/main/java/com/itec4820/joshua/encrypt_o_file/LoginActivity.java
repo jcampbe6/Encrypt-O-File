@@ -16,14 +16,21 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 /**
+ * Class: LoginActivity
  * Created by Joshua on 10/16/2014.
+ *
+ * Purpose: To attempt to login a user in order to use the Encrypt-O-File app. Provides
+ * the user with a login interface. If the user provides correct credentials, access is granted,
+ * otherwise an error message is displayed.
  */
 public class LoginActivity extends Activity {
     Button forgotPasswordButton;
+    Button loginButton;
     EditText loginEmail;
     EditText loginPassword;
     TextView loginErrorMessage;
     CheckBox rememberMeCheckBox;
+    boolean isAppRegistered;
     boolean rememberMe;
 
     // JSON Response node names
@@ -44,6 +51,7 @@ public class LoginActivity extends Activity {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
+        loginButton = (Button) findViewById(R.id.loginButton);
         forgotPasswordButton = (Button) findViewById(R.id.forgotPasswordButton);
         loginEmail = (EditText) findViewById(R.id.loginEmail);
         loginPassword = (EditText) findViewById(R.id.loginPassword);
@@ -56,14 +64,21 @@ public class LoginActivity extends Activity {
         if (rememberMe) {
             loginEmail.setText(settings.getString("email", ""));
             rememberMeCheckBox.setChecked(true);
-            loginPassword.setFocusableInTouchMode(true);
-            loginPassword.requestFocus();
+            //loginPassword.setFocusableInTouchMode(true);
+            //loginPassword.requestFocus();
+            loginPassword.setText(settings.getString("password", ""));
+            loginButton.setFocusableInTouchMode(true);
+            loginButton.requestFocus();
         }
     }
 
-    //verifies credentials and logs in if successful
-    //successful login results in viewing file directory
-    //failed login results in error message
+    /**
+     * Method: login
+     * @param view
+     * Attempts to log user in by verifying credentials provided by user against the user database
+     * on an external server. A successful login results in user being granted access to browse
+     * phone directory. A failed login results in an error message being displayed.
+     */
     public void login(View view) {
         String email = loginEmail.getText().toString();
         String password = loginPassword.getText().toString();
@@ -72,14 +87,14 @@ public class LoginActivity extends Activity {
         //attempts login and returns JSON response
         JSONObject jsonObj = logRegFunction.loginUser(email, password);
 
-        //check for login response
+        //check for 'success' response
         try {
-            String res = jsonObj.getString(KEY_SUCCESS);
-            if (res != null) {
+            String response = jsonObj.getString(KEY_SUCCESS);
+            if (response != null) {
                 loginErrorMessage.setText("");
 
-                if (Integer.parseInt(res) == 1) {
-                    //user successfully logged in
+                //if 'success' response is '1', user successfully logged in
+                if (Integer.parseInt(response) == 1) {
                     //store user details in SQLite Database
                     DatabaseHandler dbHandler = new DatabaseHandler(getApplicationContext());
                     JSONObject jsonUser = jsonObj.getJSONObject("user");
@@ -88,21 +103,33 @@ public class LoginActivity extends Activity {
                     logRegFunction.logoutUser(getApplicationContext());
                     dbHandler.addUser(jsonUser.getString(KEY_EMAIL), jsonObj.getString(KEY_UID), jsonUser.getString(KEY_CREATED_AT));
 
-                    //set preferences to remember login email
+                    //get preferences
                     SharedPreferences settings = getSharedPreferences("app_preferences", MODE_PRIVATE);
                     SharedPreferences.Editor editor = settings.edit();
+
+                    //if app isn't already registered, update registration status in app
+                    //preferences to true
+                    isAppRegistered = settings.getBoolean("registration_status", false);
+                    if (!isAppRegistered) {
+                        editor.putBoolean("registration_status", true);
+                        editor.apply();
+                    }
+
+                    //set preferences to remember login email based on checked status of checkbox
                     if (rememberMeCheckBox.isChecked()) {
                         editor.putBoolean("remember_me", true);
                         editor.putString("email", email);
+                        editor.putString("password", password);
                         editor.apply();
                     }
                     else {
                         editor.putBoolean("remember_me", false);
                         editor.putString("email", "");
+                        editor.putString("password", "");
                         editor.apply();
                     }
 
-                    //view directory
+                    //start intent to browse directory
                     Intent intentBrowse = new Intent(getApplicationContext(), FileBrowserActivity.class);
 
                     //close all views before viewing directory
@@ -112,8 +139,8 @@ public class LoginActivity extends Activity {
                     //close login screen
                     finish();
                 }
+                //else if login failed, display login error message
                 else {
-                    //login error
                     loginErrorMessage.setText("Incorrect email/password");
                 }
             }

@@ -98,12 +98,10 @@ public class FileBrowserActivity extends ListActivity {
         Collections.sort(fileList);
         adapter.addDirectoryItems(directoryList);
         adapter.addFileItems(fileList);
-        //directory.addAll(filesList);
 
         if(!aFile.getName().equalsIgnoreCase("sdcard")) {
-            adapter.addDirectoryItem(0, new FileListItem("..", "Parent Directory", "", aFile.getParent(), "directory_up", null));
+            adapter.addDirectoryUpItem(new FileListItem("..", "Parent Directory", "", aFile.getParent(), "directory_up", null));
         }
-
 
         this.setListAdapter(adapter);
     }

@@ -1,71 +1,136 @@
 package com.itec4820.joshua.encrypt_o_file;
 
-import android.content.Context;
-import android.widget.ImageView;
-import android.widget.Toast;
-
 import java.io.File;
 
 /**
+ * Class: FileListItem
  * Created by Joshua on 10/9/2014.
+ *
+ * Purpose: Represents a single file as a list item.
  */
 public class FileListItem implements Comparable<FileListItem> {
     private String name;
-    private String data;
+    private String size;
     private String date;
     private String path;
     private String fileIconName;
     private String lockIconName;
     private File file;
 
-    public FileListItem(String aName,String someData, String aDate, String aPath, String aFileIcon, File aFile) {
+    /**
+     * Constructor: FileListItem
+     * Constructs a FileListItem object with a name, size, date, path, file icon name,
+     * and an object of the File class. Intended for use when constructing a 'directory'
+     * list item, so no lock icon name is initialized.
+     * @param aName
+     * @param aSize
+     * @param aDate
+     * @param aPath
+     * @param aFileIcon
+     * @param aFile
+     */
+    public FileListItem(String aName, String aSize, String aDate, String aPath, String aFileIcon, File aFile) {
         name = aName;
-        data = someData;
+        size = aSize;
         date = aDate;
         path = aPath;
         fileIconName = aFileIcon;
-        lockIconName = "empty";
         file = aFile;
     }
 
-    public FileListItem(String aName,String someData, String aDate, String aPath, String aFileIcon, String aLockIcon, File aFile) {
+    /**
+     * Constructor: FileListItem
+     * Constructs a FileListItem object with a name, size, date, path, file icon name,
+     * lock icon name, and an object of the File class. Intended for use when constructing
+     * a 'file' list item.
+     * @param aName
+     * @param aSize
+     * @param aDate
+     * @param aPath
+     * @param aFileIconName
+     * @param aLockIconName
+     * @param aFile
+     */
+    public FileListItem(String aName, String aSize, String aDate, String aPath, String aFileIconName, String aLockIconName, File aFile) {
         name = aName;
-        data = someData;
+        size = aSize;
         date = aDate;
         path = aPath;
-        fileIconName = aFileIcon;
-        lockIconName = aLockIcon;
+        fileIconName = aFileIconName;
+        lockIconName = aLockIconName;
         file = aFile;
     }
 
+    /**
+     * Method: getFileName
+     * Returns the name of the associated file
+     * @return name the file name
+     */
     public String getFileName() {
         return name;
     }
 
-    public String getData() {
-        return data;
+    /**
+     * Method: getSize
+     * Returns the size of the associated file
+     * @return size the file size
+     */
+    public String getSize() {
+        return size;
     }
 
+    /**
+     * Method: getDate
+     * Returns the last modified date of the associated file
+     * @return date the last modified date
+     */
     public String getDate() {
         return date;
     }
 
+    /**
+     * Method: getPath
+     * Returns the path of the associated file
+     * @return path the file's path
+     */
     public String getPath() {
         return path;
     }
 
+    /**
+     * Method: getFileIconName
+     * Returns the name of the associated file
+     * @return fileIconName the name of the file
+     */
     public String getFileIconName() {
         return fileIconName;
     }
 
+    /**
+     * Method: getLockIconName
+     * Returns the name associated with the lock icon image
+     * @return lockIconName the name of the icon
+     */
     public String getLockIconName() {
         return lockIconName;
     }
 
+    /**
+     * Method: setLockIconName
+     * @param name
+     * Sets the lock icon name to the specified String value.
+     */
     public void setLockIconName(String name) {
         lockIconName = name;
     }
 
+    /**
+     * Method: compareTo
+     * Required method, since this class implements Comparable. This was done in order to simplify
+     * sorting of a list containing FileListItem objects using the Collections.sort() method.
+     * @param item
+     * @return
+     */
     public int compareTo(FileListItem item) {
         if(this.name != null)
             return this.name.toLowerCase().compareTo(item.getFileName().toLowerCase());
@@ -73,6 +138,11 @@ public class FileListItem implements Comparable<FileListItem> {
             throw new IllegalArgumentException();
     }
 
+    /**
+     * Method: getFile
+     * Returns the file associated with this list item
+     * @return file the corresponding file
+     */
     public File getFile() {
         return file;
     }

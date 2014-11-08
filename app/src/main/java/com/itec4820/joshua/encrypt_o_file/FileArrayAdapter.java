@@ -17,10 +17,14 @@ import java.util.List;
 import java.util.TreeSet;
 
 /**
+ * Class: FileArrayAdapter
  * Created by Joshua on 10/9/2014.
+ *
+ * Purpose: To adapt each item in an array of files and display them in a ListView format.
  */
 public class FileArrayAdapter extends BaseAdapter {
 
+    //static variables used to determine view layout to be used
     private static final int DIRECTORY_VIEW = 0;
     private static final int FILE_VIEW = 1;
     private static final int MAX_VIEW_TYPES = 2;
@@ -30,22 +34,43 @@ public class FileArrayAdapter extends BaseAdapter {
     private LayoutInflater inflater;
     private TreeSet fileSet = new TreeSet();
 
+    /**
+     * Constructor: FileArrayAdapter
+     * @param newContext
+     */
     public FileArrayAdapter(Activity newContext) {
         context = newContext;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
-    public void addDirectoryItem(int position, FileListItem item) {
-        items.add(position, item);
+    /**
+     * Method: addDirectoryItem
+     * @param item
+     * This method is intended to add the 'previous directory' item to the beginning of
+     * the items ArrayList.
+     */
+    public void addDirectoryUpItem(FileListItem item) {
+        items.add(0, item);
     }
 
+    /**
+     * Method: addDirectoryItems
+     * @param list
+     * Adds each item in a list of Directories to the items ArrayList (used to fill the
+     * list view).
+     */
     public void addDirectoryItems(List<FileListItem> list) {
-        for (FileListItem item: list) {
-            items.add(item);
-            notifyDataSetChanged();
-        }
+        items.addAll(list);
+        notifyDataSetChanged();
     }
 
+    /**
+     * Method: addFileItems
+     * @param list
+     * Adds each item in a list of files to both the items ArrayList (used to fill the
+     * list view) and the fileSet TreeSet (used to save the item's position which will be
+     * used to determine which view layout to use).
+     */
     public void addFileItems(final List<FileListItem> list) {
         for (FileListItem item: list) {
             items.add(item);
@@ -56,6 +81,11 @@ public class FileArrayAdapter extends BaseAdapter {
         }
     }
 
+    /**
+     * Method: clearLists
+     * Clears all elements of the items ArrayList and the fileSet TreeSet to prepare for
+     * a new item list.
+     */
     public void clearLists() {
         items.clear();
         fileSet.clear();
@@ -77,6 +107,9 @@ public class FileArrayAdapter extends BaseAdapter {
     }
 
     @Override
+    /**
+     * Used to determine which view layout type to use for an item at a specified position.
+     */
     public int getItemViewType(int position) {
         int viewType;
         if (fileSet.contains(position)) {
@@ -85,7 +118,7 @@ public class FileArrayAdapter extends BaseAdapter {
         else {
             viewType = DIRECTORY_VIEW;
         }
-        return viewType;//fileSet.contains(position) ? FILE_VIEW : DIRECTORY_VIEW;
+        return viewType;
     }
 
     @Override
@@ -93,6 +126,10 @@ public class FileArrayAdapter extends BaseAdapter {
         return items.get(position);
     }
 
+    /**
+     * Class: ViewHolder
+     * To hold each list item's view variables.
+     */
     static class ViewHolder {
         protected TextView fileTitle;
         protected TextView fileSize;
@@ -119,19 +156,19 @@ public class FileArrayAdapter extends BaseAdapter {
             viewHolder = new ViewHolder();
 
             switch (type) {
+                //if directory view, then set corresponding layout and initialize layout specific variables
                 case DIRECTORY_VIEW:
                     convertView = inflater.inflate(R.layout.activity_file_browser_directory, null);
                     viewHolder.fileIcon = (ImageView) convertView.findViewById(R.id.directoryIcon);
                     viewHolder.fileTitle = (TextView) convertView.findViewById(R.id.directoryTitle);
                     viewHolder.fileSize = (TextView) convertView.findViewById(R.id.directorySize);
-                    viewHolder.dateModified = (TextView) convertView.findViewById(R.id.dateModifiedDirectory);
                     break;
 
+                //if file view, then set corresponding layout and initialize layout specific variables
                 case FILE_VIEW:
                     convertView = inflater.inflate(R.layout.activity_file_browser_file, null);
                     viewHolder.fileIcon = (ImageView) convertView.findViewById(R.id.fileIcon);
                     viewHolder.fileTitle = (TextView) convertView.findViewById(R.id.fileTitle);
-                    viewHolder.fileSize = (TextView) convertView.findViewById(R.id.fileSize);
                     viewHolder.dateModified = (TextView) convertView.findViewById(R.id.dateModifiedFile);
                     viewHolder.lockIcon = (ImageView) convertView.findViewById(R.id.lockIcon);
                     break;
@@ -143,19 +180,25 @@ public class FileArrayAdapter extends BaseAdapter {
             viewHolder = (ViewHolder)convertView.getTag();
         }
 
+        //set file icon image based on list item's file icon name
         viewHolder.fileIconURI = "drawable/" + listItem.getFileIconName();
         viewHolder.fileIconImageResource = context.getResources().getIdentifier(viewHolder.fileIconURI, null, context.getPackageName());
         viewHolder.fileIconImage = context.getResources().getDrawable(viewHolder.fileIconImageResource);
         viewHolder.fileIcon.setImageDrawable(viewHolder.fileIconImage);
 
         viewHolder.fileTitle.setText(listItem.getFileName());
-        viewHolder.fileSize.setText(listItem.getData());
-        viewHolder.dateModified.setText(listItem.getDate());
 
         switch (type) {
+            //set directory layout specific variable values
             case DIRECTORY_VIEW:
+                viewHolder.fileSize.setText(listItem.getSize());
                 break;
+
+            //set file layout specific variable values
             case FILE_VIEW:
+                viewHolder.dateModified.setText(listItem.getDate());
+
+                //set initial lock icon image based on list item's initial lock icon name
                 viewHolder.lockIconURI = "drawable/" + listItem.getLockIconName();
                 viewHolder.lockIconImageResource = context.getResources().getIdentifier(viewHolder.lockIconURI, null, context.getPackageName());
                 viewHolder.lockIconImage = context.getResources().getDrawable(viewHolder.lockIconImageResource);
@@ -164,15 +207,24 @@ public class FileArrayAdapter extends BaseAdapter {
                 viewHolder.lockIcon.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        String newLockIconName = listItem.getLockIconName().equalsIgnoreCase("unlocked") ? "locked" : "unlocked";
+                        //set new name for lock icon based on current lock icon name
+                        String newLockIconName;
+                        if (listItem.getLockIconName().equalsIgnoreCase("unlocked")) {
+                            newLockIconName = "locked";
+                        }
+                        else {
+                            newLockIconName = "unlocked";
+                        }
                         listItem.setLockIconName(newLockIconName);
 
+                        //set new image for lock icon based on new icon name
                         viewHolder.lockIconURI = "drawable/" + listItem.getLockIconName();
                         viewHolder.lockIconImageResource = context.getResources().getIdentifier(viewHolder.lockIconURI, null, context.getPackageName());
                         viewHolder.lockIconImage = context.getResources().getDrawable(viewHolder.lockIconImageResource);
                         viewHolder.lockIcon.setImageDrawable(viewHolder.lockIconImage);
 
-                        Toast.makeText(context, listItem.getFileName() + ": " + listItem.getLockIconName(), Toast.LENGTH_LONG).show();
+                        //display text popup with file name + new lock icon name
+                        Toast.makeText(context, listItem.getFileName() + ": " + listItem.getLockIconName(), Toast.LENGTH_SHORT).show();
                     }
                 });
                 break;
