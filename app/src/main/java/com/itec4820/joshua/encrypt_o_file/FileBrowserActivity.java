@@ -24,20 +24,25 @@ public class FileBrowserActivity extends ListActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         currentDirectory = new File("/storage/emulated/0");
+        adapter = new FileArrayAdapter(this);
+
         fill(currentDirectory);
     }
+
     private void fill(File aFile)
     {
         File[] directoryArray = aFile.listFiles();
         this.setTitle(currentDirectory.getPath());
-        List<FileListItem>directory = new ArrayList<FileListItem>();
-        List<FileListItem> filesList = new ArrayList<FileListItem>();
+        List<FileListItem> directoryList = new ArrayList<FileListItem>();
+        final List<FileListItem> fileList = new ArrayList<FileListItem>();
+
         try{
             for(File file: directoryArray)
             {
                 Date lastModDate = new Date(file.lastModified());
                 DateFormat formatter = DateFormat.getDateTimeInstance();
                 String modifiedDate = formatter.format(lastModDate);
+
                 if(file.isDirectory()){
                     File[] directoryFiles = file.listFiles();
                     int totalFiles;
@@ -55,71 +60,87 @@ public class FileBrowserActivity extends ListActivity {
                         numOfItems = totalFiles + " items";
                     }
 
-                    directory.add(new FileListItem(file.getName(), numOfItems,modifiedDate,file.getAbsolutePath(),"directory_icon"));
+                    directoryList.add(new FileListItem(file.getName(), numOfItems, modifiedDate, file.getAbsolutePath(), "directory_icon", file));
                 }
                 else
                 {
-                    String iconName = "file_icon";
+                    String fileIconName = "file_icon";
+                    String lockIconName = "unlocked";
+
                     if (file.getName().endsWith(".doc") || file.getName().endsWith(".docx")){
-                        iconName = "doc_icon";
+                        fileIconName = "doc_icon";
                     }
                     else if (file.getName().endsWith(".xls") || file.getName().endsWith(".xlsx")) {
-                        iconName = "xls_icon";
+                        fileIconName = "xls_icon";
                     }
                     else if (file.getName().endsWith(".ppt") || file.getName().endsWith(".pptx")) {
-                        iconName = "ppt_icon";
+                        fileIconName = "ppt_icon";
                     }
                     else if (file.getName().endsWith(".pdf")) {
-                        iconName = "pdf_icon";
+                        fileIconName = "pdf_icon";
                     }
                     else if (file.getName().endsWith(".txt")) {
-                        iconName = "txt_icon";
+                        fileIconName = "txt_icon";
                     }
                     else if (file.getName().endsWith(".png") || file.getName().endsWith(".jpg")  || file.getName().endsWith(".jpeg")
                             || file.getName().endsWith(".gif")) {
-                        iconName = "img_icon";
+                        fileIconName = "img_icon";
                     }
 
-                    filesList.add(new FileListItem(file.getName(), file.length() + " Byte", modifiedDate, file.getAbsolutePath(), iconName));
+                    fileList.add(new FileListItem(file.getName(), file.length() + " Byte", modifiedDate, file.getAbsolutePath(), fileIconName, lockIconName, file));
                 }
             }
         }catch(Exception e)
         {
 
         }
-        Collections.sort(directory);
-        Collections.sort(filesList);
-        directory.addAll(filesList);
+        Collections.sort(directoryList);
+        Collections.sort(fileList);
+        adapter.addDirectoryItems(directoryList);
+        adapter.addFileItems(fileList);
+        //directory.addAll(filesList);
 
         if(!aFile.getName().equalsIgnoreCase("sdcard")) {
-            directory.add(0, new FileListItem("..", "Parent Directory", "", aFile.getParent(), "directory_up"));
+            adapter.addDirectoryItem(0, new FileListItem("..", "Parent Directory", "", aFile.getParent(), "directory_up", null));
         }
 
-        adapter = new FileArrayAdapter(getApplicationContext(), R.layout.activity_file_browser,directory);
+
         this.setListAdapter(adapter);
     }
     @Override
     protected void onListItemClick(ListView listView, View view, int position, long id) {
-        // TODO Auto-generated method stub
         super.onListItemClick(listView, view, position, id);
+
         FileListItem fListItem = adapter.getItem(position);
 
-        if(fListItem.getImage().equalsIgnoreCase("directory_icon") || fListItem.getImage().equalsIgnoreCase("directory_up")){
-            currentDirectory = new File(fListItem.getPath());
-            fill(currentDirectory);
+        if(fListItem.getFileIconName().equalsIgnoreCase("directory_icon") || fListItem.getFileIconName().equalsIgnoreCase("directory_up")) {
+            onDirectoryClick(fListItem);
         }
-        else
-        {
+        else {
             onFileClick(fListItem);
         }
     }
-    private void onFileClick(FileListItem listItem)
-    {
-        Toast.makeText(getApplicationContext(), "Clicked: " + listItem.getName(), Toast.LENGTH_SHORT).show();
+
+    private void onDirectoryClick(FileListItem listItem) {
+        currentDirectory = new File(listItem.getPath());
+        adapter.clearLists();
+        fill(currentDirectory);
+    }
+
+    private void onFileClick(FileListItem listItem) {
+        Toast.makeText(getApplicationContext(), "Clicked: " + listItem.getFileName(), Toast.LENGTH_SHORT).show();
         /*Intent intent = new Intent();
         intent.putExtra("GetPath",currentDirectory.toString());
         intent.putExtra("GetFileName",listItem.getName());
         setResult(RESULT_OK, intent);
         finish();*/
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent startMain = new Intent(Intent.ACTION_MAIN);
+        startMain.addCategory(Intent.CATEGORY_HOME);
+        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(startMain);
     }
 }

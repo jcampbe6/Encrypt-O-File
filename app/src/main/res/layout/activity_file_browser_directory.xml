@@ -1,0 +1,47 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    tools:context="com.itec4820.joshua.encrypt_o_file.FileBrowserActivity">
+
+    <ImageView
+        android:id="@+id/directoryIcon"
+        android:layout_width="50dip"
+        android:layout_height="50dip"
+        android:layout_margin="5dp"/>
+
+    <TextView
+        android:id="@+id/directoryTitle"
+        android:text="Title"
+        android:textColor="#000000"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:singleLine="true"
+        android:textStyle="bold"
+        android:layout_toRightOf="@+id/directoryIcon"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="5dp" />
+
+    <TextView
+        android:id="@+id/directorySize"
+        android:text="Size"
+        android:textColor="#000000"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/directoryIcon"
+        android:layout_below="@id/directoryTitle"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"/>
+
+    <TextView
+        android:id="@+id/dateModifiedDirectory"
+        android:text="Date Modified"
+        android:textColor="#000000"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/directorySize"
+        android:layout_alignParentRight="true"
+        android:layout_marginLeft="5dip"
+        android:layout_marginRight="60dp"/>
+
+</RelativeLayout>

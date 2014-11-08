@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,11 +19,12 @@ import android.widget.Toast;
  * Created by Joshua on 10/16/2014.
  */
 public class LoginActivity extends Activity {
-    Button loginButton;
     Button forgotPasswordButton;
     EditText loginEmail;
     EditText loginPassword;
     TextView loginErrorMessage;
+    CheckBox rememberMeCheckBox;
+    boolean rememberMe;
 
     // JSON Response node names
     private final static String KEY_SUCCESS = "success";
@@ -42,16 +44,21 @@ public class LoginActivity extends Activity {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        loginButton = (Button) findViewById(R.id.loginButton);
         forgotPasswordButton = (Button) findViewById(R.id.forgotPasswordButton);
         loginEmail = (EditText) findViewById(R.id.loginEmail);
         loginPassword = (EditText) findViewById(R.id.loginPassword);
         loginErrorMessage = (TextView) findViewById(R.id.loginErrorMessage);
+        rememberMeCheckBox = (CheckBox) findViewById(R.id.rememberMeCheckBox);
 
-        /*SharedPreferences settings = getSharedPreferences("app_preferences", MODE_PRIVATE);
-        boolean isAppRegistered = settings.getBoolean("registration_status", false);
-
-        Toast.makeText(this, "Registered: " + isAppRegistered, Toast.LENGTH_LONG).show();*/
+        // retrieves 'remember me' preference setting
+        SharedPreferences settings = getSharedPreferences("app_preferences", MODE_PRIVATE);
+        rememberMe = settings.getBoolean("remember_me", false);
+        if (rememberMe) {
+            loginEmail.setText(settings.getString("email", ""));
+            rememberMeCheckBox.setChecked(true);
+            loginPassword.setFocusableInTouchMode(true);
+            loginPassword.requestFocus();
+        }
     }
 
     //verifies credentials and logs in if successful
@@ -80,6 +87,20 @@ public class LoginActivity extends Activity {
                     //clear all previous data in database
                     logRegFunction.logoutUser(getApplicationContext());
                     dbHandler.addUser(jsonUser.getString(KEY_EMAIL), jsonObj.getString(KEY_UID), jsonUser.getString(KEY_CREATED_AT));
+
+                    //set preferences to remember login email
+                    SharedPreferences settings = getSharedPreferences("app_preferences", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = settings.edit();
+                    if (rememberMeCheckBox.isChecked()) {
+                        editor.putBoolean("remember_me", true);
+                        editor.putString("email", email);
+                        editor.apply();
+                    }
+                    else {
+                        editor.putBoolean("remember_me", false);
+                        editor.putString("email", "");
+                        editor.apply();
+                    }
 
                     //view directory
                     Intent intentBrowse = new Intent(getApplicationContext(), FileBrowserActivity.class);
