@@ -25,8 +25,8 @@
         android:layout_marginLeft="5dp" />
 
     <TextView
-        android:id="@+id/dateModifiedFile"
-        android:text="Date Modified"
+        android:id="@+id/sizeAndDateTimeModified"
+        android:text="Size | Date | Time"
         android:textColor="#000000"
         android:textSize="12sp"
         android:layout_width="wrap_content"

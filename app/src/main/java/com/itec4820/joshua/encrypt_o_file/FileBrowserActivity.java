@@ -3,12 +3,14 @@ package com.itec4820.joshua.encrypt_o_file;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.format.Formatter;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import java.io.File;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -40,8 +42,13 @@ public class FileBrowserActivity extends ListActivity {
             for(File file: directoryArray)
             {
                 Date lastModDate = new Date(file.lastModified());
-                DateFormat formatter = DateFormat.getDateTimeInstance();
-                String modifiedDate = formatter.format(lastModDate);
+                DateFormat formatter = DateFormat.getDateInstance(DateFormat.MEDIUM);
+                //gets date
+                String date = formatter.format(lastModDate);
+                formatter = DateFormat.getTimeInstance(DateFormat.SHORT);
+                //gets time
+                String time = formatter.format(lastModDate);
+                String modifiedDate = date + "  |  " + time;//formatter.format(lastModDate);
 
                 if(file.isDirectory()){
                     File[] directoryFiles = file.listFiles();
@@ -87,7 +94,9 @@ public class FileBrowserActivity extends ListActivity {
                         fileIconName = "img_icon";
                     }
 
-                    fileList.add(new FileListItem(file.getName(), file.length() + " Byte", modifiedDate, file.getAbsolutePath(), fileIconName, lockIconName, file));
+                    String size = formatFileSize(file.length());
+
+                    fileList.add(new FileListItem(file.getName(), size, modifiedDate, file.getAbsolutePath(), fileIconName, lockIconName, file));
                 }
             }
         }catch(Exception e)
@@ -140,5 +149,18 @@ public class FileBrowserActivity extends ListActivity {
         startMain.addCategory(Intent.CATEGORY_HOME);
         startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(startMain);
+    }
+
+    /**
+     * Method: formatFileSize
+     * Formats a file size to a more readable format with units: B, kB, MB, GB, TB.
+     * @param size the size to be formatted
+     * @return the formatted file size string
+     */
+    public static String formatFileSize(long size) {
+        if(size <= 0) return "0";
+        final String[] units = new String[] { "B", "kB", "MB", "GB", "TB" };
+        int digitGroups = (int) (Math.log10(size)/Math.log10(1024));
+        return new DecimalFormat("#,##0.#").format(size/Math.pow(1024, digitGroups)) + " " + units[digitGroups];
     }
 }

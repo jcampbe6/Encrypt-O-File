@@ -133,7 +133,7 @@ public class FileArrayAdapter extends BaseAdapter {
     static class ViewHolder {
         protected TextView fileTitle;
         protected TextView fileSize;
-        protected TextView dateModified;
+        protected TextView sizeAndDateModified;
 
         protected ImageView fileIcon;
         protected String fileIconURI;
@@ -169,7 +169,7 @@ public class FileArrayAdapter extends BaseAdapter {
                     convertView = inflater.inflate(R.layout.activity_file_browser_file, null);
                     viewHolder.fileIcon = (ImageView) convertView.findViewById(R.id.fileIcon);
                     viewHolder.fileTitle = (TextView) convertView.findViewById(R.id.fileTitle);
-                    viewHolder.dateModified = (TextView) convertView.findViewById(R.id.dateModifiedFile);
+                    viewHolder.sizeAndDateModified = (TextView) convertView.findViewById(R.id.sizeAndDateTimeModified);
                     viewHolder.lockIcon = (ImageView) convertView.findViewById(R.id.lockIcon);
                     break;
             }
@@ -196,7 +196,8 @@ public class FileArrayAdapter extends BaseAdapter {
 
             //set file layout specific variable values
             case FILE_VIEW:
-                viewHolder.dateModified.setText(listItem.getDate());
+                String sizeDate = listItem.getSize() + "  |  " + listItem.getDate();
+                viewHolder.sizeAndDateModified.setText(sizeDate);//(listItem.getDate());
 
                 //set initial lock icon image based on list item's initial lock icon name
                 viewHolder.lockIconURI = "drawable/" + listItem.getLockIconName();
