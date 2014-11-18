@@ -67,8 +67,8 @@ public class LoginActivity extends Activity {
             //loginPassword.setFocusableInTouchMode(true);
             //loginPassword.requestFocus();
             loginPassword.setText(settings.getString("password", ""));
-            loginButton.setFocusableInTouchMode(true);
-            loginButton.requestFocus();
+            //loginButton.setFocusable(true);
+            //loginButton.requestFocus();
         }
     }
 

@@ -1,7 +1,5 @@
 package com.itec4820.joshua.encrypt_o_file;
 
-import java.io.File;
-
 /**
  * Class: FileListItem
  * Created by Joshua on 10/9/2014.
@@ -15,50 +13,44 @@ public class FileListItem implements Comparable<FileListItem> {
     private String path;
     private String fileIconName;
     private String lockIconName;
-    private File file;
 
     /**
      * Constructor: FileListItem
-     * Constructs a FileListItem object with a name, size, date, path, file icon name,
-     * and an object of the File class. Intended for use when constructing a 'directory'
-     * list item, so no lock icon name is initialized.
+     * Constructs a FileListItem object with a name, size, date, path, and a file icon name.
+     * Intended for use when constructing a 'directory' list item, so no lock icon name
+     * is initialized.
      * @param aName
      * @param aSize
      * @param aDate
      * @param aPath
      * @param aFileIcon
-     * @param aFile
      */
-    public FileListItem(String aName, String aSize, String aDate, String aPath, String aFileIcon, File aFile) {
+    public FileListItem(String aName, String aSize, String aDate, String aPath, String aFileIcon) {
         name = aName;
         size = aSize;
         date = aDate;
         path = aPath;
         fileIconName = aFileIcon;
-        file = aFile;
     }
 
     /**
      * Constructor: FileListItem
      * Constructs a FileListItem object with a name, size, date, path, file icon name,
-     * lock icon name, and an object of the File class. Intended for use when constructing
-     * a 'file' list item.
+     * and a lock icon name. Intended for use when constructing a 'file' list item.
      * @param aName
      * @param aSize
      * @param aDate
      * @param aPath
      * @param aFileIconName
      * @param aLockIconName
-     * @param aFile
      */
-    public FileListItem(String aName, String aSize, String aDate, String aPath, String aFileIconName, String aLockIconName, File aFile) {
+    public FileListItem(String aName, String aSize, String aDate, String aPath, String aFileIconName, String aLockIconName) {
         name = aName;
         size = aSize;
         date = aDate;
         path = aPath;
         fileIconName = aFileIconName;
         lockIconName = aLockIconName;
-        file = aFile;
     }
 
     /**
@@ -136,14 +128,5 @@ public class FileListItem implements Comparable<FileListItem> {
             return this.name.toLowerCase().compareTo(item.getFileName().toLowerCase());
         else
             throw new IllegalArgumentException();
-    }
-
-    /**
-     * Method: getFile
-     * Returns the file associated with this list item
-     * @return file the corresponding file
-     */
-    public File getFile() {
-        return file;
     }
 }

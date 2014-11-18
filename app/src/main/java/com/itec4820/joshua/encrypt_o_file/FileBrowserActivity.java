@@ -1,22 +1,19 @@
 package com.itec4820.joshua.encrypt_o_file;
 
+import android.app.Dialog;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.*;
-import android.os.Process;
-import android.text.format.Formatter;
+import android.os.Bundle;
 import android.view.View;
 import android.webkit.MimeTypeMap;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import java.io.File;
-import java.text.DateFormat;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 
@@ -40,18 +37,12 @@ public class FileBrowserActivity extends ListActivity {
         this.setTitle(currentDirectory.getPath());
         List<FileListItem> directoryList = new ArrayList<FileListItem>();
         final List<FileListItem> fileList = new ArrayList<FileListItem>();
+        final FileUtility fileUtility = new FileUtility();
 
         try{
             for(File file: directoryArray)
             {
-                Date lastModDate = new Date(file.lastModified());
-                DateFormat formatter = DateFormat.getDateInstance(DateFormat.MEDIUM);
-                //gets date
-                String date = formatter.format(lastModDate);
-                formatter = DateFormat.getTimeInstance(DateFormat.SHORT);
-                //gets time
-                String time = formatter.format(lastModDate);
-                String modifiedDate = date + "  |  " + time;//formatter.format(lastModDate);
+                String modifiedDate = fileUtility.formatDateTime(file);
 
                 if(file.isDirectory()){
                     File[] directoryFiles = file.listFiles();
@@ -70,36 +61,15 @@ public class FileBrowserActivity extends ListActivity {
                         numOfItems = totalFiles + " items";
                     }
 
-                    directoryList.add(new FileListItem(file.getName(), numOfItems, modifiedDate, file.getAbsolutePath(), "directory_icon", file));
+                    directoryList.add(new FileListItem(file.getName(), numOfItems, modifiedDate, file.getAbsolutePath(), "directory_icon"));
                 }
                 else
                 {
-                    String fileIconName = "file_icon";
-                    String lockIconName = "unlocked";
+                    String fileIconName = fileUtility.setFileIconName(file);
+                    String lockIconName = fileUtility.setLockIconName(file);
+                    String size = fileUtility.formatFileSize(file);
 
-                    if (file.getName().endsWith(".doc") || file.getName().endsWith(".docx")){
-                        fileIconName = "doc_icon";
-                    }
-                    else if (file.getName().endsWith(".xls") || file.getName().endsWith(".xlsx")) {
-                        fileIconName = "xls_icon";
-                    }
-                    else if (file.getName().endsWith(".ppt") || file.getName().endsWith(".pptx")) {
-                        fileIconName = "ppt_icon";
-                    }
-                    else if (file.getName().endsWith(".pdf")) {
-                        fileIconName = "pdf_icon";
-                    }
-                    else if (file.getName().endsWith(".txt")) {
-                        fileIconName = "txt_icon";
-                    }
-                    else if (file.getName().endsWith(".png") || file.getName().endsWith(".jpg")  || file.getName().endsWith(".jpeg")
-                            || file.getName().endsWith(".gif")) {
-                        fileIconName = "img_icon";
-                    }
-
-                    String size = formatFileSize(file.length());
-
-                    fileList.add(new FileListItem(file.getName(), size, modifiedDate, file.getAbsolutePath(), fileIconName, lockIconName, file));
+                    fileList.add(new FileListItem(file.getName(), size, modifiedDate, file.getAbsolutePath(), fileIconName, lockIconName));
                 }
             }
         }catch(Exception e)
@@ -112,7 +82,7 @@ public class FileBrowserActivity extends ListActivity {
         adapter.addFileItems(fileList);
 
         if(!aFile.getName().equalsIgnoreCase("sdcard")) {
-            adapter.addDirectoryUpItem(new FileListItem("..", "Parent Directory", "", aFile.getParent(), "directory_up", null));
+            adapter.addDirectoryUpItem(new FileListItem("..", "Parent Directory", "", aFile.getParent(), "directory_up"));
         }
 
         this.setListAdapter(adapter);
@@ -138,16 +108,24 @@ public class FileBrowserActivity extends ListActivity {
     }
 
     private void onFileClick(final FileListItem listItem) {
-        String ext = listItem.getFileName().substring(listItem.getFileName().indexOf(".")+1);
+        openFile(listItem.getFileName(), listItem.getPath());
 
-        if (!listItem.getFileName().startsWith(".") && !ext.contains(".apk")) {
+        //Toast.makeText(getApplicationContext(), listItem.getPath(), Toast.LENGTH_LONG).show();
+    }
+
+    private void openFile(String fileName, String filePath) {
+        String extNoPeriod = fileName.substring(fileName.lastIndexOf(".") + 1);
+
+        if (!fileName.startsWith(".") && !extNoPeriod.equalsIgnoreCase("encx")) {
             Intent intent = new Intent();
             intent.setAction(android.content.Intent.ACTION_VIEW);
 
             MimeTypeMap mime = MimeTypeMap.getSingleton();
-            String type = mime.getMimeTypeFromExtension(ext);
+            String type = mime.getMimeTypeFromExtension(extNoPeriod);
 
-            intent.setDataAndType(Uri.fromFile(listItem.getFile()), type);
+            File file = new File(filePath);
+
+            intent.setDataAndType(Uri.fromFile(file), type);
             startActivity(intent);
         }
         else {
@@ -161,18 +139,5 @@ public class FileBrowserActivity extends ListActivity {
         startMain.addCategory(Intent.CATEGORY_HOME);
         startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(startMain);
-    }
-
-    /**
-     * Method: formatFileSize
-     * Formats a file size to a more readable format with units: B, kB, MB, GB, TB.
-     * @param size the size to be formatted
-     * @return the formatted file size string
-     */
-    public static String formatFileSize(long size) {
-        if(size <= 0) return "0";
-        final String[] units = new String[] { "B", "kB", "MB", "GB", "TB" };
-        int digitGroups = (int) (Math.log10(size)/Math.log10(1024));
-        return new DecimalFormat("#,##0.#").format(size/Math.pow(1024, digitGroups)) + " " + units[digitGroups];
     }
 }
