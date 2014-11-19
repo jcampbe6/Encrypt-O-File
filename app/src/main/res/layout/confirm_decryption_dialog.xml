@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent" >
+
+    <EditText
+        android:id="@+id/decrypt_password"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="25dp"
+        android:layout_marginTop="15dp"
+        android:padding="10dp"
+        android:textColor="#FF33b5e5"
+        android:password="true"
+        android:hint="password" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_below="@id/decrypt_password" >
+
+        <View style="@style/HorizontalDivider"/>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button style="?android:attr/buttonBarButtonStyle"
+                    android:id="@+id/decrypt_button"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Decrypt"
+                    android:textColor="#ffffff"
+                    android:textSize="14sp"/>
+
+            <View style="@style/VerticalDivider"/>
+
+            <Button style="?android:attr/buttonBarButtonStyle"
+                    android:id="@+id/cancel_decryption_button"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Cancel"
+                    android:textColor="#ffffff"
+                    android:textSize="14sp"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

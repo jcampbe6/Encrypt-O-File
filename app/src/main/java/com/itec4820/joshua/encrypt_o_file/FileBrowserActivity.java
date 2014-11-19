@@ -81,8 +81,8 @@ public class FileBrowserActivity extends ListActivity {
         adapter.addDirectoryItems(directoryList);
         adapter.addFileItems(fileList);
 
-        if(!aFile.getName().equalsIgnoreCase("sdcard")) {
-            adapter.addDirectoryUpItem(new FileListItem("..", "Parent Directory", "", aFile.getParent(), "directory_up"));
+        if(aFile.getParent() != null) {//!aFile.getName().equalsIgnoreCase("sdcard") &&
+                adapter.addDirectoryUpItem(new FileListItem("..", "Parent Directory", "", aFile.getParent(), "directory_up"));
         }
 
         this.setListAdapter(adapter);
@@ -109,8 +109,6 @@ public class FileBrowserActivity extends ListActivity {
 
     private void onFileClick(final FileListItem listItem) {
         openFile(listItem.getFileName(), listItem.getPath());
-
-        //Toast.makeText(getApplicationContext(), listItem.getPath(), Toast.LENGTH_LONG).show();
     }
 
     private void openFile(String fileName, String filePath) {

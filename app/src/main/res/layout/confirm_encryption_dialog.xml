@@ -4,26 +4,68 @@
     android:layout_height="fill_parent" >
 
     <EditText
-        android:id="@+id/password"
+        android:id="@+id/encrypt_password"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
         android:layout_marginBottom="5dp"
+        android:layout_marginTop="15dp"
         android:padding="10dp"
-        android:textColor="#e30000"
+        android:textColor="#FF33b5e5"
         android:password="true"
         android:hint="password" />
 
     <EditText
-        android:id="@+id/confirmPassword"
+        android:id="@+id/confirm_encrypt_password"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/password"
-        android:layout_margin="5dp"
+        android:layout_below="@id/encrypt_password"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="25dp"
+        android:layout_marginTop="5dp"
         android:padding="10dp"
-        android:textColor="#e30000"
+        android:textColor="#FF33b5e5"
         android:password="true"
         android:hint="confirm password" />
+
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_below="@id/confirm_encrypt_password" >
+
+        <View style="@style/HorizontalDivider"/>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button style="?android:attr/buttonBarButtonStyle"
+                android:id="@+id/encrypt_button"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Encrypt"
+                android:textColor="#ffffff"
+                android:textSize="14sp"/>
+
+            <View style="@style/VerticalDivider"/>
+
+            <Button style="?android:attr/buttonBarButtonStyle"
+                android:id="@+id/cancel_encryption_button"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Cancel"
+                android:textColor="#ffffff"
+                android:textSize="14sp"/>
+
+            </LinearLayout>
+
+    </LinearLayout>
 
 </RelativeLayout>

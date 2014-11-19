@@ -3,16 +3,21 @@ package com.itec4820.joshua.encrypt_o_file;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -211,78 +216,103 @@ public class FileArrayAdapter extends BaseAdapter {
                 viewHolder.lockIcon.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if (listItem.getLockIconName().equalsIgnoreCase("locked")) {
+                        // encrypt
+                        if (listItem.getLockIconName().equalsIgnoreCase("unlocked")) {
+                            // build encryption dialog box
                             AlertDialog.Builder builder = new AlertDialog.Builder(context, AlertDialog.THEME_HOLO_DARK);
 
-                            builder.setTitle("Decrypt " + listItem.getFileName() + "?")
-                                    .setMessage("Are you sure you want to decrypt?")
-                                    .setPositiveButton("Cancel", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            dialogInterface.dismiss();
-                                        }
-                                    })
-                                    .setNegativeButton("Decrypt", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            // decrypts and returns decrypted file
-                                            File decryptedFile = Encryptor.decrypt("password", listItem.getPath());
-
-                                            // sets list item properties and creates new list item
-                                            String size = FileUtility.formatFileSize(decryptedFile);
-                                            String modifiedDate = FileUtility.formatDateTime(decryptedFile);
-                                            String fileIconName = FileUtility.setFileIconName(decryptedFile);
-                                            String lockIconName = FileUtility.setLockIconName(decryptedFile);
-                                            FileListItem newListItem = new FileListItem(decryptedFile.getName(), size, modifiedDate, decryptedFile.getAbsolutePath(), fileIconName, lockIconName);
-
-                                            // replaces encrypted list item with decrypted list item
-                                            items.set(position, newListItem);
-                                            notifyDataSetChanged();
-
-                                            //set lock icon to "unlocked" based on current file extension
-                                            if (!listItem.getFileName().endsWith(".encx")) {
-                                                listItem.setLockIconName("unlocked");
-                                                viewHolder.lockIconURI = "drawable/" + listItem.getLockIconName();
-                                                viewHolder.lockIconImageResource = context.getResources().getIdentifier(viewHolder.lockIconURI, null, context.getPackageName());
-                                                viewHolder.lockIconImage = context.getResources().getDrawable(viewHolder.lockIconImageResource);
-                                                viewHolder.lockIcon.setImageDrawable(viewHolder.lockIconImage);
-                                            }
-                                        }
-                                    });
-
-                            AlertDialog dialog = builder.create();
-                            dialog.show();
-                        }
-
-                        else {
-
-                            AlertDialog.Builder builder = new AlertDialog.Builder(context, AlertDialog.THEME_HOLO_DARK);
-
+                            // custom title for dialog
                             TextView title = new TextView(context);
-
                             title.setText("Encrypt " + listItem.getFileName() + "?");
                             title.setPadding(10, 10, 10, 10);
                             title.setTextColor(Color.parseColor("#FF33b5e5"));
                             title.setSingleLine(false);
                             title.setTextSize(20);
 
-                            //.setTitle("Encrypt " + listItem.getFileName() + "?")
-                            builder.setCustomTitle(title)
-                                    .setView(inflater.inflate(R.layout.confirm_encryption_dialog, parent, false))
-                                    //.setMessage("Are you sure you want to encrypt?")
-                                    .setPositiveButton("Cancel", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            dialogInterface.dismiss();
-                                        }
-                                    })
-                                    .setNegativeButton("Encrypt", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            // encrypts and returns encrypted file
-                                            File encryptedFile = Encryptor.encrypt("password", listItem.getPath(), listItem.getFileName());
+                            // custom layout view for dialog
+                            final View encryptDialogView = inflater.inflate(R.layout.confirm_encryption_dialog, parent, false);
 
-                                            // sets list item properties and creates new list item
+                            builder.setCustomTitle(title).setView(encryptDialogView);
+                            final AlertDialog encryptDialog = builder.create();
+
+                            Button encryptButton = (Button) encryptDialogView.findViewById(R.id.encrypt_button);
+                            Button cancelEncryptionButton = (Button) encryptDialogView.findViewById(R.id.cancel_encryption_button);
+
+                            final EditText passwordText = (EditText) encryptDialogView.findViewById(R.id.encrypt_password);
+                            final EditText confirmPasswordText = (EditText) encryptDialogView.findViewById(R.id.confirm_encrypt_password);
+
+                            // when password text changes, change color of confirm password
+                            // text to red if passwords don't match or to green if they do match
+                            passwordText.addTextChangedListener(new TextWatcher() {
+                                @Override
+                                public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {}
+                                @Override
+                                public void onTextChanged(CharSequence charSequence, int start, int before, int count) {}
+
+                                @Override
+                                public void afterTextChanged(Editable password) {
+                                    if (!password.toString().equals(confirmPasswordText.getText().toString())) {
+                                        confirmPasswordText.setTextColor(Color.parseColor("#e30000"));
+                                    }
+                                    else
+                                    {
+                                        confirmPasswordText.setTextColor(Color.parseColor("#00ff00"));
+                                    }
+                                }
+                            });
+
+                            // when confirm password text changes, change color of confirm password
+                            // text to red if passwords don't match or to green if they do match
+                            confirmPasswordText.addTextChangedListener(new TextWatcher() {
+                                @Override
+                                public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {}
+                                @Override
+                                public void onTextChanged(CharSequence charSequence, int start, int before, int count) {}
+
+                                @Override
+                                public void afterTextChanged(Editable confirmPassword) {
+                                    if (!confirmPassword.toString().equals(passwordText.getText().toString())) {
+                                        confirmPasswordText.setTextColor(Color.parseColor("#e30000"));
+                                    }
+                                    else
+                                    {
+                                        confirmPasswordText.setTextColor(Color.parseColor("#00ff00"));
+                                    }
+                                }
+                            });
+
+                            // listens for encrypt button click and then performs appropriate action
+                            encryptButton.setOnClickListener(new OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    // retrieve password from user input
+                                    final String password = passwordText.getText().toString();
+                                    final String confirmPassword = confirmPasswordText.getText().toString();
+
+                                    if (password.length() == 0) {
+                                        Toast.makeText(context, "Please enter a password.", Toast.LENGTH_SHORT).show();
+                                        return;
+                                    }
+
+                                    if (!confirmPassword.equals(password)) {
+                                        Toast.makeText(context, "Passwords don't match.", Toast.LENGTH_SHORT).show();
+                                        return;
+                                    }
+
+                                    // executes encryption on a separate thread if password
+                                    // isn't empty and password matches confirmation password
+                                    new EncryptorTask(context) {
+                                        // performs encryption
+                                        protected String doEncryptorTask() {
+                                            return Encryptor.encrypt(password.toString(), listItem.getPath(), listItem.getFileName());
+                                        }
+
+                                        // updates the user interface with new list item
+                                        protected void updateUI(String filePath) {
+                                            // retrieves encrypted file from file path
+                                            File encryptedFile = new File(filePath);
+
+                                            // sets list item properties and creates new list item from encrypted file
                                             String size = FileUtility.formatFileSize(encryptedFile);
                                             String modifiedDate = FileUtility.formatDateTime(encryptedFile);
                                             String fileIconName = FileUtility.setFileIconName(encryptedFile);
@@ -293,7 +323,7 @@ public class FileArrayAdapter extends BaseAdapter {
                                             items.set(position, newListItem);
                                             notifyDataSetChanged();
 
-                                            //set lock icon to "locked" based on current file extension
+                                            // sets lock icon to "locked" based on current file extension
                                             if (listItem.getFileName().endsWith(".encx")) {
                                                 listItem.setLockIconName("locked");
                                                 viewHolder.lockIconURI = "drawable/" + listItem.getLockIconName();
@@ -302,10 +332,109 @@ public class FileArrayAdapter extends BaseAdapter {
                                                 viewHolder.lockIcon.setImageDrawable(viewHolder.lockIconImage);
                                             }
                                         }
-                                    });
+                                    }.execute();
 
-                            AlertDialog dialog = builder.create();
-                            dialog.show();
+                                    encryptDialog.dismiss();
+                                }
+                            });
+
+                            // closes dialog when cancel button is clicked
+                            cancelEncryptionButton.setOnClickListener(new OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    encryptDialog.dismiss();
+                                }
+                            });
+
+                            encryptDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+                            encryptDialog.show();
+                        }
+
+                        // decrypt
+                        else {
+                            // build encryption dialog box
+                            AlertDialog.Builder builder = new AlertDialog.Builder(context, AlertDialog.THEME_HOLO_DARK);
+
+                            // custom title for dialog
+                            TextView title = new TextView(context);
+                            title.setText("Decrypt " + listItem.getFileName() + "?");
+                            title.setPadding(10, 10, 10, 10);
+                            title.setTextColor(Color.parseColor("#FF33b5e5"));
+                            title.setSingleLine(false);
+                            title.setTextSize(20);
+
+                            // custom layout view for dialog
+                            final View decryptDialogView = inflater.inflate(R.layout.confirm_decryption_dialog, parent, false);
+
+                            builder.setCustomTitle(title)
+                                    .setView(decryptDialogView);
+
+                            final AlertDialog decryptDialog = builder.create();
+
+                            Button decryptButton = (Button) decryptDialogView.findViewById(R.id.decrypt_button);
+                            Button cancelDecryptionButton = (Button) decryptDialogView.findViewById(R.id.cancel_decryption_button);
+
+                            // listens for decrypt button click and then performs appropriate action
+                            decryptButton.setOnClickListener(new OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    // retrieve password from user input
+                                    EditText decryptPasswordText = (EditText) decryptDialogView.findViewById(R.id.decrypt_password);
+                                    decryptPasswordText.requestFocus();
+                                    final String password = decryptPasswordText.getText().toString();
+
+                                    if (password.length() == 0) {
+                                        Toast.makeText(context, "Please enter a password.", Toast.LENGTH_SHORT).show();
+                                        return;
+                                    }
+
+                                    // executes decryption on a separate thread
+                                    new EncryptorTask(context) {
+                                        // performs decryption
+                                        protected String doEncryptorTask() {
+                                            return Encryptor.decrypt(password, listItem.getPath());
+                                        }
+
+                                        // updates the user interface with new list item
+                                        protected void updateUI(String filePath) {
+                                            File decryptedFile = new File(filePath);
+
+                                            // sets list item properties and creates new list item from decrypted file
+                                            String size = FileUtility.formatFileSize(decryptedFile);
+                                            String modifiedDate = FileUtility.formatDateTime(decryptedFile);
+                                            String fileIconName = FileUtility.setFileIconName(decryptedFile);
+                                            String lockIconName = FileUtility.setLockIconName(decryptedFile);
+                                            FileListItem newListItem = new FileListItem(decryptedFile.getName(), size, modifiedDate, decryptedFile.getAbsolutePath(), fileIconName, lockIconName);
+
+                                            // replaces encrypted list item with decrypted list item
+                                            items.set(position, newListItem);
+                                            notifyDataSetChanged();
+
+                                            //sets lock icon to "unlocked" based on current file extension
+                                            if (!listItem.getFileName().endsWith(".encx")) {
+                                                listItem.setLockIconName("unlocked");
+                                                viewHolder.lockIconURI = "drawable/" + listItem.getLockIconName();
+                                                viewHolder.lockIconImageResource = context.getResources().getIdentifier(viewHolder.lockIconURI, null, context.getPackageName());
+                                                viewHolder.lockIconImage = context.getResources().getDrawable(viewHolder.lockIconImageResource);
+                                                viewHolder.lockIcon.setImageDrawable(viewHolder.lockIconImage);
+                                            }
+                                        }
+                                    }.execute();
+
+                                    decryptDialog.dismiss();
+                                }
+                            });
+
+                            // closes dialog when cancel button is clicked
+                            cancelDecryptionButton.setOnClickListener(new OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    decryptDialog.dismiss();
+                                }
+                            });
+
+                            decryptDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+                            decryptDialog.show();
                         }
                     }
                 });

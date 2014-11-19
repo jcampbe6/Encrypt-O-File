@@ -1,7 +1,9 @@
 package com.itec4820.joshua.encrypt_o_file;
 
+import android.content.Context;
 import android.os.Build;
 import android.util.Base64;
+import android.widget.Toast;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -36,7 +38,7 @@ public class Encryptor {
     private static final String ENCRYPTED_EXTENSION = ".encx";
     private static SecureRandom random = new SecureRandom();
 
-    public static File encrypt(String password, String filePath, String fileName) {
+    public static String encrypt(String password, String filePath, String fileName) {
         try {
             byte[] fileData = readFile(filePath);
             byte[] salt = generateSalt();
@@ -65,13 +67,14 @@ public class Encryptor {
         }
     }
 
-    public static File decrypt(String password, String filePath) {
+    public static String decrypt(String password, String filePath) {
+        String fileName = "";
         try {
             byte[] cipherText = readFile(filePath);
             String[] cipherTextFields = new String(cipherText).split("]");
             byte[] salt = fromBase64(cipherTextFields[0]);
             byte[] iv = fromBase64(cipherTextFields[1]);
-            String fileName = new String(fromBase64(cipherTextFields[2]));
+            fileName = new String(fromBase64(cipherTextFields[2]));
             byte[] fileData = fromBase64(cipherTextFields[3]);
 
             SecretKeySpec secretKeySpec = generateSecretKeySpec(password.toCharArray(), salt);
@@ -167,7 +170,7 @@ public class Encryptor {
         return Base64.decode(base64, Base64.NO_WRAP);
     }
 
-    private static File changeFileExtension(String filePath) {
+    private static String changeFileExtension(String filePath) {
         File originalFile = new File(filePath);
         String encryptedFileName = filePath.replaceFirst("[.][^.]+$", "");
         File encryptedFile = new File(encryptedFileName + ENCRYPTED_EXTENSION);
@@ -182,10 +185,10 @@ public class Encryptor {
 
         originalFile.renameTo(encryptedFile);
 
-        return encryptedFile;
+        return encryptedFile.getAbsolutePath();
     }
 
-    private static File restoreOrigFileExtension(String filePath, String fileName)
+    private static String restoreOrigFileExtension(String filePath, String fileName)
     {
         File encryptedFile = new File(filePath);
         String parentDirectoryPath = encryptedFile.getParent() + "/";
@@ -203,6 +206,6 @@ public class Encryptor {
 
         encryptedFile.renameTo(originalFile);
 
-        return originalFile;
+        return originalFile.getAbsolutePath();
     }
 }
