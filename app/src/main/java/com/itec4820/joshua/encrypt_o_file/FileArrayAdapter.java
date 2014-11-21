@@ -1,10 +1,13 @@
 package com.itec4820.joshua.encrypt_o_file;
 
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.os.CountDownTimer;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -37,18 +40,18 @@ public class FileArrayAdapter extends BaseAdapter {
     private static final int FILE_VIEW = 1;
     private static final int MAX_VIEW_TYPES = 2;
 
-    private final Activity context;
+    private final Activity activity;
     private static final List<FileListItem> items = new ArrayList<FileListItem>();
     private LayoutInflater inflater;
-    private TreeSet fileSet = new TreeSet();
+    private TreeSet<Integer> fileSet = new TreeSet<Integer>();
 
     /**
      * Constructor: FileArrayAdapter
-     * @param newContext
+     * @param activity the Activity
      */
-    public FileArrayAdapter(Activity newContext) {
-        context = newContext;
-        inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    public FileArrayAdapter(Activity activity) {
+        this.activity = activity;
+        inflater = (LayoutInflater) this.activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     /**
@@ -190,8 +193,8 @@ public class FileArrayAdapter extends BaseAdapter {
 
         //set file icon image based on list item's file icon name
         viewHolder.fileIconURI = "drawable/" + listItem.getFileIconName();
-        viewHolder.fileIconImageResource = context.getResources().getIdentifier(viewHolder.fileIconURI, null, context.getPackageName());
-        viewHolder.fileIconImage = context.getResources().getDrawable(viewHolder.fileIconImageResource);
+        viewHolder.fileIconImageResource = activity.getResources().getIdentifier(viewHolder.fileIconURI, null, activity.getPackageName());
+        viewHolder.fileIconImage = activity.getResources().getDrawable(viewHolder.fileIconImageResource);
         viewHolder.fileIcon.setImageDrawable(viewHolder.fileIconImage);
 
         viewHolder.fileTitle.setText(listItem.getFileName());
@@ -209,9 +212,11 @@ public class FileArrayAdapter extends BaseAdapter {
 
                 //set initial lock icon image based on list item's initial lock icon name
                 viewHolder.lockIconURI = "drawable/" + listItem.getLockIconName();
-                viewHolder.lockIconImageResource = context.getResources().getIdentifier(viewHolder.lockIconURI, null, context.getPackageName());
-                viewHolder.lockIconImage = context.getResources().getDrawable(viewHolder.lockIconImageResource);
+                viewHolder.lockIconImageResource = activity.getResources().getIdentifier(viewHolder.lockIconURI, null, activity.getPackageName());
+                viewHolder.lockIconImage = activity.getResources().getDrawable(viewHolder.lockIconImageResource);
                 viewHolder.lockIcon.setImageDrawable(viewHolder.lockIconImage);
+
+                final View thisItem = convertView;
 
                 viewHolder.lockIcon.setOnClickListener(new OnClickListener() {
                     @Override
@@ -219,10 +224,10 @@ public class FileArrayAdapter extends BaseAdapter {
                         // encrypt
                         if (listItem.getLockIconName().equalsIgnoreCase("unlocked")) {
                             // build encryption dialog box
-                            AlertDialog.Builder builder = new AlertDialog.Builder(context, AlertDialog.THEME_HOLO_DARK);
+                            AlertDialog.Builder builder = new AlertDialog.Builder(activity, AlertDialog.THEME_HOLO_DARK);
 
                             // custom title for dialog
-                            TextView title = new TextView(context);
+                            TextView title = new TextView(activity);
                             title.setText("Encrypt " + listItem.getFileName() + "?");
                             title.setPadding(10, 10, 10, 10);
                             title.setTextColor(Color.parseColor("#FF33b5e5"));
@@ -290,47 +295,79 @@ public class FileArrayAdapter extends BaseAdapter {
                                     final String confirmPassword = confirmPasswordText.getText().toString();
 
                                     if (password.length() == 0) {
-                                        Toast.makeText(context, "Please enter a password.", Toast.LENGTH_SHORT).show();
+                                        EncryptOToaster.makeText(activity, "Please enter a password.", Toast.LENGTH_SHORT).show();
                                         return;
                                     }
 
                                     if (!confirmPassword.equals(password)) {
-                                        Toast.makeText(context, "Passwords don't match.", Toast.LENGTH_SHORT).show();
+                                        EncryptOToaster.makeText(activity, "Passwords don't match.", Toast.LENGTH_SHORT).show();
                                         return;
                                     }
 
                                     // executes encryption on a separate thread if password
                                     // isn't empty and password matches confirmation password
-                                    new EncryptorTask(context) {
+                                    new EncryptorTask(activity) {
                                         // performs encryption
                                         protected String doEncryptorTask() {
-                                            return Encryptor.encrypt(password.toString(), listItem.getPath(), listItem.getFileName());
+                                            return Encryptor.encrypt(password, listItem.getPath(), listItem.getFileName());
                                         }
 
                                         // updates the user interface with new list item
-                                        protected void updateUI(String filePath) {
-                                            // retrieves encrypted file from file path
-                                            File encryptedFile = new File(filePath);
+                                        protected void updateUI(final String filePath) {
+                                            // initialize object animator
+                                            final ObjectAnimator translateAnimation = new ObjectAnimator();
 
-                                            // sets list item properties and creates new list item from encrypted file
-                                            String size = FileUtility.formatFileSize(encryptedFile);
-                                            String modifiedDate = FileUtility.formatDateTime(encryptedFile);
-                                            String fileIconName = FileUtility.setFileIconName(encryptedFile);
-                                            String lockIconName = FileUtility.setLockIconName(encryptedFile);
-                                            FileListItem newListItem = new FileListItem(encryptedFile.getName(), size, modifiedDate, encryptedFile.getAbsolutePath(), fileIconName, lockIconName);
-
-                                            // replaces decrypted list item with encrypted list item
-                                            items.set(position, newListItem);
-                                            notifyDataSetChanged();
-
-                                            // sets lock icon to "locked" based on current file extension
-                                            if (listItem.getFileName().endsWith(".encx")) {
-                                                listItem.setLockIconName("locked");
-                                                viewHolder.lockIconURI = "drawable/" + listItem.getLockIconName();
-                                                viewHolder.lockIconImageResource = context.getResources().getIdentifier(viewHolder.lockIconURI, null, context.getPackageName());
-                                                viewHolder.lockIconImage = context.getResources().getDrawable(viewHolder.lockIconImageResource);
-                                                viewHolder.lockIcon.setImageDrawable(viewHolder.lockIconImage);
+                                            // animates list item view
+                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                                                // Move the list item view over to the right
+                                                translateAnimation.setTarget(thisItem);//.ofFloat(thisItem, View.TRANSLATION_X, 1500);
+                                                translateAnimation.setProperty(View.TRANSLATION_X);
+                                                translateAnimation.setFloatValues(1500);
+                                                translateAnimation.setDuration(300);
+                                                translateAnimation.start();
                                             }
+
+                                            new CountDownTimer(700, 700) {
+                                                @Override
+                                                public void onTick(long l) {} // do nothing
+
+                                                public void onFinish() {
+                                                    // retrieves encrypted file from file path
+                                                    File encryptedFile = new File(filePath);
+
+                                                    // sets list item properties and creates new list item from encrypted file
+                                                    String size = FileUtility.formatFileSize(encryptedFile);
+                                                    String modifiedDate = FileUtility.formatDateTime(encryptedFile);
+                                                    String fileIconName = FileUtility.setFileIconName(encryptedFile);
+                                                    String lockIconName = FileUtility.setLockIconName(encryptedFile);
+                                                    FileListItem newListItem = new FileListItem(encryptedFile.getName(), size, modifiedDate, encryptedFile.getAbsolutePath(), fileIconName, lockIconName);
+
+                                                    // replaces decrypted list item with encrypted list item
+                                                    items.set(position, newListItem);
+                                                    notifyDataSetChanged();
+
+                                                    // sets lock icon to "locked" based on current file extension
+                                                    if (listItem.getFileName().endsWith(".encx")) {
+                                                        listItem.setLockIconName("locked");
+                                                        viewHolder.lockIconURI = "drawable/" + listItem.getLockIconName();
+                                                        viewHolder.lockIconImageResource = activity.getResources().getIdentifier(viewHolder.lockIconURI, null, activity.getPackageName());
+                                                        viewHolder.lockIconImage = activity.getResources().getDrawable(viewHolder.lockIconImageResource);
+                                                        viewHolder.lockIcon.setImageDrawable(viewHolder.lockIconImage);
+                                                    }
+
+                                                    // moves new list item in from the left
+                                                    new CountDownTimer(200, 200) {
+                                                        @Override
+                                                        public void onTick(long l) {} // do nothing
+
+                                                        public void onFinish() {
+                                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                                                                translateAnimation.reverse();
+                                                            }
+                                                        }
+                                                    }.start();
+                                                }
+                                            }.start();
                                         }
                                     }.execute();
 
@@ -353,10 +390,10 @@ public class FileArrayAdapter extends BaseAdapter {
                         // decrypt
                         else {
                             // build encryption dialog box
-                            AlertDialog.Builder builder = new AlertDialog.Builder(context, AlertDialog.THEME_HOLO_DARK);
+                            AlertDialog.Builder builder = new AlertDialog.Builder(activity, AlertDialog.THEME_HOLO_DARK);
 
                             // custom title for dialog
-                            TextView title = new TextView(context);
+                            TextView title = new TextView(activity);
                             title.setText("Decrypt " + listItem.getFileName() + "?");
                             title.setPadding(10, 10, 10, 10);
                             title.setTextColor(Color.parseColor("#FF33b5e5"));
@@ -384,40 +421,75 @@ public class FileArrayAdapter extends BaseAdapter {
                                     final String password = decryptPasswordText.getText().toString();
 
                                     if (password.length() == 0) {
-                                        Toast.makeText(context, "Please enter a password.", Toast.LENGTH_SHORT).show();
+                                        EncryptOToaster.makeText(activity, "Please enter a password.", Toast.LENGTH_SHORT).show();
                                         return;
                                     }
 
                                     // executes decryption on a separate thread
-                                    new EncryptorTask(context) {
+                                    new EncryptorTask(activity) {
                                         // performs decryption
                                         protected String doEncryptorTask() {
                                             return Encryptor.decrypt(password, listItem.getPath());
                                         }
 
                                         // updates the user interface with new list item
-                                        protected void updateUI(String filePath) {
-                                            File decryptedFile = new File(filePath);
+                                        protected void updateUI(final String filePath) {
+                                            // initialize object animator
+                                            final ObjectAnimator translateAnimation = new ObjectAnimator();
 
-                                            // sets list item properties and creates new list item from decrypted file
-                                            String size = FileUtility.formatFileSize(decryptedFile);
-                                            String modifiedDate = FileUtility.formatDateTime(decryptedFile);
-                                            String fileIconName = FileUtility.setFileIconName(decryptedFile);
-                                            String lockIconName = FileUtility.setLockIconName(decryptedFile);
-                                            FileListItem newListItem = new FileListItem(decryptedFile.getName(), size, modifiedDate, decryptedFile.getAbsolutePath(), fileIconName, lockIconName);
-
-                                            // replaces encrypted list item with decrypted list item
-                                            items.set(position, newListItem);
-                                            notifyDataSetChanged();
-
-                                            //sets lock icon to "unlocked" based on current file extension
-                                            if (!listItem.getFileName().endsWith(".encx")) {
-                                                listItem.setLockIconName("unlocked");
-                                                viewHolder.lockIconURI = "drawable/" + listItem.getLockIconName();
-                                                viewHolder.lockIconImageResource = context.getResources().getIdentifier(viewHolder.lockIconURI, null, context.getPackageName());
-                                                viewHolder.lockIconImage = context.getResources().getDrawable(viewHolder.lockIconImageResource);
-                                                viewHolder.lockIcon.setImageDrawable(viewHolder.lockIconImage);
+                                            // animates list item view
+                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                                                // Moves the list item view over to the right
+                                                translateAnimation.setTarget(thisItem);
+                                                translateAnimation.setProperty(View.TRANSLATION_X);
+                                                translateAnimation.setFloatValues(1500);
+                                                translateAnimation.setDuration(300);
+                                                translateAnimation.start();
                                             }
+
+
+                                            new CountDownTimer(700, 700) {
+                                                @Override
+                                                public void onTick(long l) {} // do nothing
+
+                                                public void onFinish() {
+                                                    // retrieves decrypted file from file path
+                                                    File decryptedFile = new File(filePath);
+
+                                                    // sets list item properties and creates new list item from decrypted file
+                                                    String size = FileUtility.formatFileSize(decryptedFile);
+                                                    String modifiedDate = FileUtility.formatDateTime(decryptedFile);
+                                                    String fileIconName = FileUtility.setFileIconName(decryptedFile);
+                                                    String lockIconName = FileUtility.setLockIconName(decryptedFile);
+                                                    FileListItem newListItem = new FileListItem(decryptedFile.getName(), size, modifiedDate, decryptedFile.getAbsolutePath(), fileIconName, lockIconName);
+
+                                                    // replaces encrypted list item with decrypted list item
+                                                    items.set(position, newListItem);
+                                                    notifyDataSetChanged();
+
+                                                    //sets lock icon to "unlocked" based on current file extension
+                                                    if (!listItem.getFileName().endsWith(".encx")) {
+                                                        listItem.setLockIconName("unlocked");
+                                                        viewHolder.lockIconURI = "drawable/" + listItem.getLockIconName();
+                                                        viewHolder.lockIconImageResource = activity.getResources().getIdentifier(viewHolder.lockIconURI, null, activity.getPackageName());
+                                                        viewHolder.lockIconImage = activity.getResources().getDrawable(viewHolder.lockIconImageResource);
+                                                        viewHolder.lockIcon.setImageDrawable(viewHolder.lockIconImage);
+                                                    }
+
+                                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                                                        // moves new list item in from the left
+                                                        new CountDownTimer(200, 200) {
+                                                            @Override
+                                                            public void onTick(long l) {
+                                                            } // do nothing
+
+                                                            public void onFinish() {
+                                                                translateAnimation.reverse();
+                                                            }
+                                                        }.start();
+                                                    }
+                                                }
+                                            }.start();
                                         }
                                     }.execute();
 
@@ -443,4 +515,9 @@ public class FileArrayAdapter extends BaseAdapter {
 
         return convertView;
     }
+
+
+
+
+
 }

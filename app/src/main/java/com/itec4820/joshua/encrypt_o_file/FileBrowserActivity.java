@@ -1,13 +1,11 @@
 package com.itec4820.joshua.encrypt_o_file;
 
-import android.app.Dialog;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.MimeTypeMap;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -15,7 +13,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 
 public class FileBrowserActivity extends ListActivity {
 
@@ -37,12 +34,11 @@ public class FileBrowserActivity extends ListActivity {
         this.setTitle(currentDirectory.getPath());
         List<FileListItem> directoryList = new ArrayList<FileListItem>();
         final List<FileListItem> fileList = new ArrayList<FileListItem>();
-        final FileUtility fileUtility = new FileUtility();
 
         try{
             for(File file: directoryArray)
             {
-                String modifiedDate = fileUtility.formatDateTime(file);
+                String modifiedDate = FileUtility.formatDateTime(file);
 
                 if(file.isDirectory()){
                     File[] directoryFiles = file.listFiles();
@@ -65,17 +61,19 @@ public class FileBrowserActivity extends ListActivity {
                 }
                 else
                 {
-                    String fileIconName = fileUtility.setFileIconName(file);
-                    String lockIconName = fileUtility.setLockIconName(file);
-                    String size = fileUtility.formatFileSize(file);
+                    String fileIconName = FileUtility.setFileIconName(file);
+                    String lockIconName = FileUtility.setLockIconName(file);
+                    String size = FileUtility.formatFileSize(file);
 
                     fileList.add(new FileListItem(file.getName(), size, modifiedDate, file.getAbsolutePath(), fileIconName, lockIconName));
                 }
             }
-        }catch(Exception e)
-        {
-
         }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+
         Collections.sort(directoryList);
         Collections.sort(fileList);
         adapter.addDirectoryItems(directoryList);

@@ -1,21 +1,19 @@
 package com.itec4820.joshua.encrypt_o_file;
 
-import android.content.Context;
+import android.app.Activity;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
-
-import javax.crypto.BadPaddingException;
 
 /**
  * Created by Joshua on 11/19/2014.
  */
 public abstract class EncryptorTask extends AsyncTask<Void, Void, String> {
     Exception error;
-    Context context;
+    Activity activity;
 
-    public EncryptorTask(Context context){
-        this.context = context;
+    public EncryptorTask(Activity activity){
+        this.activity = activity;
     }
 
     protected abstract String doEncryptorTask();
@@ -37,7 +35,7 @@ public abstract class EncryptorTask extends AsyncTask<Void, Void, String> {
     @Override
     protected void onPostExecute(String filePath) {
         if (error != null) {
-            Toast.makeText(context, "Incorrect Password", Toast.LENGTH_LONG).show();
+            EncryptOToaster.makeText(activity, "Incorrect Password", Toast.LENGTH_SHORT).show();
             return;
         }
 

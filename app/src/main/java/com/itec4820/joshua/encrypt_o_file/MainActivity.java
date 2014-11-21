@@ -17,15 +17,13 @@ import android.widget.Button;
  */
 public class MainActivity extends ActionBarActivity {
 
-    private boolean isAppRegistered;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         //get preferences
         SharedPreferences settings = getSharedPreferences("app_preferences", MODE_PRIVATE);
-        isAppRegistered = settings.getBoolean("registration_status", false);
+        boolean isAppRegistered = settings.getBoolean("registration_status", false);
 
         //if app is registered, proceed to login screen
         if (isAppRegistered) {

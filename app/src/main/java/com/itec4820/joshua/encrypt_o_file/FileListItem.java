@@ -19,11 +19,11 @@ public class FileListItem implements Comparable<FileListItem> {
      * Constructs a FileListItem object with a name, size, date, path, and a file icon name.
      * Intended for use when constructing a 'directory' list item, so no lock icon name
      * is initialized.
-     * @param aName
-     * @param aSize
-     * @param aDate
-     * @param aPath
-     * @param aFileIcon
+     * @param aName the file name
+     * @param aSize the file size
+     * @param aDate the last modified date
+     * @param aPath the file path
+     * @param aFileIcon the file icon
      */
     public FileListItem(String aName, String aSize, String aDate, String aPath, String aFileIcon) {
         name = aName;
@@ -37,12 +37,12 @@ public class FileListItem implements Comparable<FileListItem> {
      * Constructor: FileListItem
      * Constructs a FileListItem object with a name, size, date, path, file icon name,
      * and a lock icon name. Intended for use when constructing a 'file' list item.
-     * @param aName
-     * @param aSize
-     * @param aDate
-     * @param aPath
-     * @param aFileIconName
-     * @param aLockIconName
+     * @param aName the file name
+     * @param aSize the file size
+     * @param aDate the last modified date
+     * @param aPath the file path
+     * @param aFileIconName the file icon
+     * @param aLockIconName the lock icon
      */
     public FileListItem(String aName, String aSize, String aDate, String aPath, String aFileIconName, String aLockIconName) {
         name = aName;
@@ -120,8 +120,8 @@ public class FileListItem implements Comparable<FileListItem> {
      * Method: compareTo
      * Required method, since this class implements Comparable. This was done in order to simplify
      * sorting of a list containing FileListItem objects using the Collections.sort() method.
-     * @param item
-     * @return
+     * @param item the item to compare to
+     * @return the value of compareTo result
      */
     public int compareTo(FileListItem item) {
         if(this.name != null)

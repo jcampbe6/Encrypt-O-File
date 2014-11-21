@@ -1,9 +1,7 @@
 package com.itec4820.joshua.encrypt_o_file;
 
-import android.content.Context;
 import android.os.Build;
 import android.util.Base64;
-import android.widget.Toast;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -68,13 +66,12 @@ public class Encryptor {
     }
 
     public static String decrypt(String password, String filePath) {
-        String fileName = "";
         try {
             byte[] cipherText = readFile(filePath);
             String[] cipherTextFields = new String(cipherText).split("]");
             byte[] salt = fromBase64(cipherTextFields[0]);
             byte[] iv = fromBase64(cipherTextFields[1]);
-            fileName = new String(fromBase64(cipherTextFields[2]));
+            String fileName = new String(fromBase64(cipherTextFields[2]));
             byte[] fileData = fromBase64(cipherTextFields[3]);
 
             SecretKeySpec secretKeySpec = generateSecretKeySpec(password.toCharArray(), salt);

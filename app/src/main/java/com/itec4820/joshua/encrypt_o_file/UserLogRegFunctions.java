@@ -15,13 +15,11 @@ import android.content.Context;
 public class UserLogRegFunctions {
     private JSONParser jsonParser;
 
-    // Testing in localhost using wamp or xampp
-    // use http://10.0.2.2/ to connect to your localhost ie http://localhost/
-    private static String loginURL = "http://54.173.40.64/";
-    private static String registerURL = "http://54.173.40.64/";
+    private static final String LOGIN_URL = "http://54.173.40.64/";
+    private static final String REGISTER_URL = "http://54.173.40.64/";
 
-    private static String loginTag = "login";
-    private static String registerTag = "register";
+    private static final String LOGIN_TAG = "login";
+    private static final String REGISTER_TAG = "register";
 
     // constructor
     public UserLogRegFunctions(){
@@ -29,35 +27,35 @@ public class UserLogRegFunctions {
     }
 
     /**
-     * function make Login Request
-     * @param email
-     * @param password
+     * Method: loginUser
+     * @param email the user's registered email
+     * @param password the user's registered password
      * */
     public JSONObject loginUser(String email, String password){
         // Building Parameters
         List<NameValuePair> params = new ArrayList<NameValuePair>();
-        params.add(new BasicNameValuePair("tag", loginTag));
+        params.add(new BasicNameValuePair("tag", LOGIN_TAG));
         params.add(new BasicNameValuePair("email", email));
         params.add(new BasicNameValuePair("password", password));
 
         // return JSON Object
-        return jsonParser.getJSONFromUrl(loginURL, params);
+        return jsonParser.getJSONFromUrl(LOGIN_URL, params);
     }
 
     /**
-     * function make Login Request
-     * @param email
-     * @param password
+     * Method: registerUser
+     * @param email the user's email
+     * @param password the user's chosen password
      * */
     public JSONObject registerUser(String email, String password){
         // Building Parameters
         List<NameValuePair> params = new ArrayList<NameValuePair>();
-        params.add(new BasicNameValuePair("tag", registerTag));
+        params.add(new BasicNameValuePair("tag", REGISTER_TAG));
         params.add(new BasicNameValuePair("email", email));
         params.add(new BasicNameValuePair("password", password));
 
         // return JSON Object
-        return jsonParser.getJSONFromUrl(registerURL, params);
+        return jsonParser.getJSONFromUrl(REGISTER_URL, params);
     }
 
     /**
