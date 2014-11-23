@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.CountDownTimer;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -87,7 +88,7 @@ public class FileArrayAdapter extends BaseAdapter {
             items.add(item);
 
             //save file position
-            fileSet.add(items.size());
+            fileSet.add(items.size()-1);
             notifyDataSetChanged();
         }
     }
@@ -170,6 +171,7 @@ public class FileArrayAdapter extends BaseAdapter {
                 //if directory view, then set corresponding layout and initialize layout specific variables
                 case DIRECTORY_VIEW:
                     convertView = inflater.inflate(R.layout.activity_file_browser_directory, parent, false);
+
                     viewHolder.fileIcon = (ImageView) convertView.findViewById(R.id.directoryIcon);
                     viewHolder.fileTitle = (TextView) convertView.findViewById(R.id.directoryTitle);
                     viewHolder.fileSize = (TextView) convertView.findViewById(R.id.directorySize);
@@ -317,12 +319,17 @@ public class FileArrayAdapter extends BaseAdapter {
                                             // initialize object animator
                                             final ObjectAnimator translateAnimation = new ObjectAnimator();
 
+                                            // get display with for object animation
+                                            DisplayMetrics metrics=new DisplayMetrics();
+                                            activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+                                            float displayWidth = metrics.widthPixels;
+
                                             // animates list item view
                                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                                                 // Move the list item view over to the right
-                                                translateAnimation.setTarget(thisItem);//.ofFloat(thisItem, View.TRANSLATION_X, 1500);
+                                                translateAnimation.setTarget(thisItem);
                                                 translateAnimation.setProperty(View.TRANSLATION_X);
-                                                translateAnimation.setFloatValues(1500);
+                                                translateAnimation.setFloatValues(displayWidth);
                                                 translateAnimation.setDuration(300);
                                                 translateAnimation.start();
                                             }
@@ -437,16 +444,20 @@ public class FileArrayAdapter extends BaseAdapter {
                                             // initialize object animator
                                             final ObjectAnimator translateAnimation = new ObjectAnimator();
 
+                                            // get display with for object animation
+                                            DisplayMetrics metrics=new DisplayMetrics();
+                                            activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+                                            float displayWidth = metrics.widthPixels;
+
                                             // animates list item view
                                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                                                 // Moves the list item view over to the right
                                                 translateAnimation.setTarget(thisItem);
                                                 translateAnimation.setProperty(View.TRANSLATION_X);
-                                                translateAnimation.setFloatValues(1500);
+                                                translateAnimation.setFloatValues(displayWidth);
                                                 translateAnimation.setDuration(300);
                                                 translateAnimation.start();
                                             }
-
 
                                             new CountDownTimer(700, 700) {
                                                 @Override

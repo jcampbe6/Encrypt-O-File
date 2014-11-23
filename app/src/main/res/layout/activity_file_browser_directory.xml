@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    tools:context="com.itec4820.joshua.encrypt_o_file.FileBrowserActivity">
+    tools:context="com.itec4820.joshua.encrypt_o_file.FileBrowserActivity" >
 
     <ImageView
         android:id="@+id/directoryIcon"

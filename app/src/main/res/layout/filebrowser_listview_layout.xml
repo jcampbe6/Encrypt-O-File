@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:padding="0dp"
+    android:orientation="vertical">
+
+    <View style="@style/HorizontalDivider"/>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/home_button"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight=".7"
+            android:src="@drawable/home_icon"
+            android:padding="10dp"
+            android:scaleType="fitCenter"
+            android:background="@drawable/button_background"/>
+
+        <View style="@style/VerticalDivider"/>
+
+        <Button
+            android:id="@+id/parent_directory_button"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="5"
+            android:text="Parent Directory"
+            android:textColor="@drawable/button_text_color"
+            android:gravity="center_vertical"
+            android:padding="10dp"
+            android:drawableLeft="@drawable/directory_up"
+            android:drawableStart="@drawable/directory_up"
+            android:drawablePadding="10dp"
+            android:background="@drawable/button_background"/>
+
+    </LinearLayout>
+
+    <View style="@style/HorizontalDivider"/>
+
+    <ListView
+        android:id="@+id/android:list"
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent" >
+
+    </ListView>
+
+
+
+</LinearLayout>

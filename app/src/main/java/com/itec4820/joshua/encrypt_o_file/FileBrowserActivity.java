@@ -2,10 +2,13 @@ package com.itec4820.joshua.encrypt_o_file;
 
 import android.app.ListActivity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.MimeTypeMap;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -18,80 +21,107 @@ public class FileBrowserActivity extends ListActivity {
 
     private File currentDirectory;
     private FileArrayAdapter adapter;
+    private ListView listView;
+    private static final String HOME_DIRECTORY = "/storage/emulated/0";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        currentDirectory = new File("/storage/emulated/0");
+        currentDirectory = new File(HOME_DIRECTORY);
         adapter = new FileArrayAdapter(this);
+
+        setContentView(R.layout.filebrowser_listview_layout);
+        listView = (ListView) findViewById(android.R.id.list);
+        ImageButton homeButton = (ImageButton) findViewById(R.id.home_button);
+        final Button parentDirectoryButton = (Button) findViewById(R.id.parent_directory_button);
+
+        homeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                adapter.clearLists();
+                currentDirectory = new File(HOME_DIRECTORY);
+                fill(currentDirectory);
+            }
+        });
+
+        parentDirectoryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (currentDirectory.getParent() != null) {
+                    currentDirectory = new File(currentDirectory.getParent());
+                    adapter.clearLists();
+                    fill(currentDirectory);
+                }
+            }
+        });
 
         fill(currentDirectory);
     }
 
-    private void fill(File aFile)
+    private void fill(final File aFile)
     {
-        File[] directoryArray = aFile.listFiles();
-        this.setTitle(currentDirectory.getPath());
-        List<FileListItem> directoryList = new ArrayList<FileListItem>();
-        final List<FileListItem> fileList = new ArrayList<FileListItem>();
+        if (aFile.isDirectory()) {
+            this.setTitle(currentDirectory.getPath());
+            File[] fileArray = aFile.listFiles();
 
-        try{
-            for(File file: directoryArray)
-            {
-                String modifiedDate = FileUtility.formatDateTime(file);
+            if (fileArray != null) {
+                List<FileListItem> directoryList = new ArrayList<FileListItem>();
+                List<FileListItem> fileList = new ArrayList<FileListItem>();
 
-                if(file.isDirectory()){
-                    File[] directoryFiles = file.listFiles();
-                    int totalFiles;
-                    if(directoryFiles != null){
-                        totalFiles = directoryFiles.length;
-                    }
-                    else {
-                        totalFiles = 0;
-                    }
-                    String numOfItems;
-                    if(totalFiles == 1){
-                        numOfItems = totalFiles + " item";
-                    }
-                    else {
-                        numOfItems = totalFiles + " items";
-                    }
+                try {
+                    for (File file : fileArray) {
+                        String modifiedDate = FileUtility.formatDateTime(file);
 
-                    directoryList.add(new FileListItem(file.getName(), numOfItems, modifiedDate, file.getAbsolutePath(), "directory_icon"));
+                        if (file.isDirectory()) {
+                            File[] directoryFiles = file.listFiles();
+                            int totalFiles;
+                            if (directoryFiles != null) {
+                                totalFiles = directoryFiles.length;
+                            }
+                            else {
+                                totalFiles = 0;
+                            }
+
+                            String numOfItems;
+                            if (totalFiles == 1) {
+                                numOfItems = totalFiles + " item";
+                            }
+                            else {
+                                numOfItems = totalFiles + " items";
+                            }
+
+                            directoryList.add(new FileListItem(file.getName(), numOfItems, modifiedDate, file.getAbsolutePath(), "directory_icon"));
+                        }
+                        else {
+                            String fileIconName = FileUtility.setFileIconName(file);
+                            String lockIconName = FileUtility.setLockIconName(file);
+                            String size = FileUtility.formatFileSize(file);
+
+                            fileList.add(new FileListItem(file.getName(), size, modifiedDate, file.getAbsolutePath(), fileIconName, lockIconName));
+                        }
+                    }
                 }
-                else
-                {
-                    String fileIconName = FileUtility.setFileIconName(file);
-                    String lockIconName = FileUtility.setLockIconName(file);
-                    String size = FileUtility.formatFileSize(file);
-
-                    fileList.add(new FileListItem(file.getName(), size, modifiedDate, file.getAbsolutePath(), fileIconName, lockIconName));
+                catch (Exception e) {
+                    e.printStackTrace();
                 }
+
+                Collections.sort(directoryList);
+                Collections.sort(fileList);
+                adapter.addDirectoryItems(directoryList);
+                adapter.addFileItems(fileList);
             }
         }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-        }
 
-        Collections.sort(directoryList);
-        Collections.sort(fileList);
-        adapter.addDirectoryItems(directoryList);
-        adapter.addFileItems(fileList);
-
-        if(aFile.getParent() != null) {//!aFile.getName().equalsIgnoreCase("sdcard") &&
-                adapter.addDirectoryUpItem(new FileListItem("..", "Parent Directory", "", aFile.getParent(), "directory_up"));
-        }
-
-        this.setListAdapter(adapter);
+        this.listView.setAdapter(adapter);
     }
+
     @Override
     protected void onListItemClick(ListView listView, View view, int position, long id) {
         super.onListItemClick(listView, view, position, id);
 
         FileListItem fListItem = adapter.getItem(position);
 
-        if(fListItem.getFileIconName().equalsIgnoreCase("directory_icon") || fListItem.getFileIconName().equalsIgnoreCase("directory_up")) {
+        if(fListItem.getFileIconName().equalsIgnoreCase("directory_icon")) {
             onDirectoryClick(fListItem);
         }
         else {
