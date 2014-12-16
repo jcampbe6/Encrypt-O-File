@@ -22,27 +22,28 @@ public class FileUtility {
 
     public static String setFileIconName(File aFile) {
         String fileIconName = "blank_icon";
+        String extension = aFile.getName().substring(aFile.getName().lastIndexOf("."));
 
-        if (aFile.getName().endsWith(".encx")) {
+        if (extension.equalsIgnoreCase(".encx")) {
             fileIconName = "encrypted_file_icon";
         }
-        else if (aFile.getName().endsWith(".doc") || aFile.getName().endsWith(".docx")){
+        else if (extension.equalsIgnoreCase(".doc") || extension.equalsIgnoreCase(".docx")){
             fileIconName = "doc_icon";
         }
-        else if (aFile.getName().endsWith(".xls") || aFile.getName().endsWith(".xlsx")) {
+        else if (extension.equalsIgnoreCase(".xls") || extension.equalsIgnoreCase(".xlsx")) {
             fileIconName = "xls_icon";
         }
-        else if (aFile.getName().endsWith(".ppt") || aFile.getName().endsWith(".pptx")) {
+        else if (extension.equalsIgnoreCase(".ppt") || extension.equalsIgnoreCase(".pptx")) {
             fileIconName = "ppt_icon";
         }
-        else if (aFile.getName().endsWith(".pdf")) {
+        else if (extension.equalsIgnoreCase(".pdf")) {
             fileIconName = "pdf_icon";
         }
-        else if (aFile.getName().endsWith(".txt")) {
+        else if (extension.equalsIgnoreCase(".txt")) {
             fileIconName = "txt_icon";
         }
-        else if (aFile.getName().endsWith(".png") || aFile.getName().endsWith(".jpg")  || aFile.getName().endsWith(".jpeg")
-                || aFile.getName().endsWith(".gif")) {
+        else if (extension.equalsIgnoreCase(".png") || extension.equalsIgnoreCase(".jpg")  || extension.equalsIgnoreCase(".jpeg")
+                || extension.equalsIgnoreCase(".gif")) {
             fileIconName = "img_icon";
         }
 

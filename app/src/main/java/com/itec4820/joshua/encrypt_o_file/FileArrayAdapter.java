@@ -26,6 +26,7 @@ import android.widget.Toast;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
@@ -56,16 +57,6 @@ public class FileArrayAdapter extends BaseAdapter {
     }
 
     /**
-     * Method: addDirectoryItem
-     * @param item
-     * This method is intended to add the 'previous directory' item to the beginning of
-     * the items ArrayList.
-     */
-    public void addDirectoryUpItem(FileListItem item) {
-        items.add(0, item);
-    }
-
-    /**
      * Method: addDirectoryItems
      * @param list
      * Adds each item in a list of Directories to the items ArrayList (used to fill the
@@ -87,10 +78,21 @@ public class FileArrayAdapter extends BaseAdapter {
         for (FileListItem item: list) {
             items.add(item);
 
-            //save file position
+            //save file position in list
             fileSet.add(items.size()-1);
             notifyDataSetChanged();
         }
+    }
+
+    /**
+     * Method: removeFileItem
+     * @param position
+     * Removes the list item at the specified position.
+     */
+    public void removeFileItem(int position) {
+        fileSet.remove(items.size()-1);
+        items.remove(position);
+        notifyDataSetChanged();
     }
 
     /**

@@ -2,6 +2,8 @@ package com.itec4820.joshua.encrypt_o_file;
 
 import android.os.Build;
 import android.util.Base64;
+import android.util.Log;
+import android.widget.Toast;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -18,6 +20,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 
 import javax.crypto.Cipher;
+import javax.crypto.CipherOutputStream;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
@@ -37,6 +40,8 @@ public class Encryptor {
     private static SecureRandom random = new SecureRandom();
 
     public static String encrypt(String password, String filePath, String fileName) {
+        //for cipheroutputstream
+        //String savingDirectory = filePath.replace(fileName, "");
         try {
             byte[] fileData = readFile(filePath);
             byte[] salt = generateSalt();
@@ -55,14 +60,35 @@ public class Encryptor {
 
             saveData(newFileData.getBytes(CHARACTER_ENCODING_SCHEME), filePath);
 
-            return changeFileExtension(filePath);
+            //TODO: append salt and iv to file
+
+            /*FileInputStream fileInputStream = new FileInputStream(filePath);
+            FileOutputStream fileOutputStream = new FileOutputStream(savingDirectory + "/encrypted.txt");
+            CipherOutputStream cipherOutputStream = new CipherOutputStream(fileOutputStream, cipher);
+
+            // Write bytes
+            int numOfBytes;
+            byte[] buffer = new byte[10000];
+            while ((numOfBytes = fileInputStream.read(buffer)) != -1) {
+                cipherOutputStream.write(buffer, 0, numOfBytes);
+            }
+
+
+            // Flush and close streams.
+            cipherOutputStream.flush();
+            cipherOutputStream.close();
+            fileInputStream.close();*/
+        }
+        catch (IOException e) {
+            e.printStackTrace();
         }
         catch (GeneralSecurityException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
-        catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+
+        return changeFileExtension(filePath);
+
+        //return savingDirectory + "/encrypted.txt";
     }
 
     public static String decrypt(String password, String filePath) {
